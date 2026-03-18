@@ -75,7 +75,10 @@
 
 <div class="controls">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div class="input-group"><label>Tên học sinh:</label><input type="text" id="in-ten" placeholder="Điền tên học sinh" oninput="updateUI()"></div>
+        <div class="input-group">
+            <label>Tên học sinh:</label>
+            <input type="text" id="in-ten" placeholder="Điền tên học sinh" oninput="this.value = formatName(this.value); updateUI()">
+        </div>
         <div class="input-group">
             <label>Môn học:</label>
             <select id="in-mon" onchange="updateUI()">
@@ -134,7 +137,7 @@
                 <div class="value" id="out-range" style="font-weight:700;">Từ --/--/---- đến --/--/----</div>
             </div>
             
-            <div class="row"><div class="label">Học phí</div><div class="separator">:</div><div class="value"><span id="out-phi" style="font-weight:700;">0</span> vnđ/ khóa</div></div>
+            <div class="row"><div class="label">Học phí</div><div class="separator">:</div><div class="value"><span id="out-phi-display" style="font-weight:700;">0</span> vnđ/ khóa</div></div>
             <div class="row"><div class="label">Hình thức đóng</div><div class="separator">:</div><div class="value">Chuyển khoản</div></div>
             <div class="row"><div class="label">Số TK</div><div class="separator">:</div><div class="value">8817208420 - Ngân hàng BIDV</div></div>
             <div class="row" style="margin-top: 5px;">
@@ -159,10 +162,18 @@
     let holidays = [];
     let isNewStudent = false;
 
+    // Hàm tự động viết hoa chữ cái đầu và sau dấu cách
+    function formatName(str) {
+        return str.toLowerCase().replace(/(^|\s)\S/g, function(l) {
+            return l.toUpperCase();
+        });
+    }
+
     function formatMoney(input) {
         let v = input.value.replace(/\D/g, "");
         v = v.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        input.value = v; updateUI();
+        input.value = v; 
+        updateUI();
     }
 
     function addHoliday() {
@@ -204,23 +215,18 @@
     function updateUI() {
         document.getElementById('out-ten').innerText = document.getElementById('in-ten').value || "---";
         document.getElementById('out-mon').innerText = document.getElementById('in-mon').value || "---";
-        document.getElementById('out-phi').innerText = document.getElementById('in-phi').value || "0";
+        document.getElementById('out-phi-display').innerText = document.getElementById('in-phi').value || "0";
         const p = document.getElementById('in-prev-end').value;
         document.getElementById('out-prev').innerText = p ? `Kết thúc khóa ngày ${new Date(p).toLocaleDateString('vi-VN')}` : "Kết thúc khóa ngày --/--/----";
     }
 
     function setNewStudentMode() {
         isNewStudent = true;
-        // Cập nhật giao diện nhập liệu
         const inPrev = document.getElementById('in-prev-end');
         inPrev.value = "";
         inPrev.disabled = true;
-        
-        // Cập nhật hiển thị trên phiếu
         document.getElementById('row-prev').style.display = 'none';
         document.getElementById('label-range').innerText = 'Khóa học bắt đầu';
-        
-        // Đổi màu nút để nhận biết
         document.getElementById('btn-new').style.opacity = '0.6';
         document.getElementById('btn-new').innerText = 'ĐANG Ở CHẾ ĐỘ HỌC SINH MỚI';
     }
@@ -235,7 +241,6 @@
         const ten = document.getElementById('in-ten').value, mon = document.getElementById('in-mon').value,
               phi = document.getElementById('in-phi').value, start = document.getElementById('in-start').value;
         
-        // Kiểm tra điều kiện: Nếu là HS mới thì không cần 'in-prev-end'
         if (!ten || !mon || !phi || !start) { 
             alert("Vui lòng điền đủ thông tin bắt buộc!"); 
             return; 
