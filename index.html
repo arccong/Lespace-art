@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'espace Art - Phiếu Học Phí Hoàn Thiện</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root { --primary: #7b2e2b; --paper: #F2E7D9; --text-color: #5D1F1F; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #e0e0e0; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        .controls { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; max-width: 600px; box-sizing: border-box; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 5px; color: #555; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        input:disabled { background: #f0f0f0; cursor: not-allowed; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: #f9f9f9; padding: 10px; border-radius: 6px; }
+        .holiday-tag { background: #ffe58f; padding: 4px 10px; border-radius: 15px; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+
+        /* VÙNG PHIẾU CHÍNH */
+        #capture-area { 
+            width: 1280px; height: 720px; background: var(--paper); position: relative; 
+            color: var(--text-color); flex-shrink: 0; overflow: hidden;
+            font-family: 'Montserrat', sans-serif; 
+        }
+
+        .header { background: white; height: 192px; padding: 0 140px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-img { height: 110px; width: auto; }
+        .title-box { text-align: right; }
+        
+        .title-main {
+            font-family: 'Segoe UI', Arial, sans-serif !important;
+            color: var(--primary); 
+            font-size: 42px; 
+            font-weight: 700; 
+            letter-spacing: 1px;
+        }
+        
+        .mon-box {
+            font-size: 28px; 
+            text-transform: uppercase; 
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        #out-mon { 
+            font-family: 'Segoe UI', Arial, sans-serif !important; 
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .content { padding: 48px 140px; display: flex; justify-content: space-between; }
+        .info-container { width: 68%; font-size: 20px; line-height: 1.7; }
+        .row { display: flex; align-items: flex-start; margin-bottom: 4px; }
+        .label { width: 210px; flex-shrink: 0; font-weight: 400; }
+        .separator { width: 20px; flex-shrink: 0; }
+        .value { flex-grow: 1; font-weight: 500; }
+        
+        .value-multiline { flex-grow: 1; font-weight: 700; font-size: 16px; text-transform: uppercase; line-height: 1.4; }
+
+        .qr-side { width: 25%; text-align: center; display: flex; flex-direction: column; align-items: center; }
+        .qr-img { width: 270px; height: auto; background: transparent; }
+        
+        .footer { position: absolute; bottom: 48px; width: 100%; text-align: center; font-style: italic; font-size: 18px; line-height: 1.5; color: #5D1F1F; }
+
+        .btn-main { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 10px; }
+        .btn-new-student { background: #28a745; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; width: 100%; margin-top: 10px; }
+        .btn-reset { background: #f0f0f0; color: #444; border: 1px solid #ccc; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; }
+
+        @media (max-width: 1024px) { #capture-area { transform: scale(0.65); transform-origin: top center; margin-bottom: -200px; } }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="input-group"><label>Tên học sinh:</label><input type="text" id="in-ten" placeholder="Điền tên học sinh" oninput="updateUI()"></div>
+        <div class="input-group">
+            <label>Môn học:</label>
+            <select id="in-mon" onchange="updateUI()">
+                <option value="" disabled selected>Điền môn học</option>
+                <option value="Piano">Piano</option><option value="Múa">Múa</option><option value="Dance">Dance</option><option value="Vẽ">Vẽ</option>
+            </select>
+        </div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="input-group"><label>Khóa trước kết thúc:</label><input type="date" id="in-prev-end" onchange="validateDates()"></div>
+        <div class="input-group"><label>Khóa sau bắt đầu:</label><input type="date" id="in-start" onchange="initSchedule()"></div>
+    </div>
+    <div class="input-group">
+        <label>Lịch học & Số buổi:</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" class="dow" value="1" onchange="calcDate()"> T2</label>
+            <label><input type="checkbox" class="dow" value="2" onchange="calcDate()"> T3</label>
+            <label><input type="checkbox" class="dow" value="3" onchange="calcDate()"> T4</label>
+            <label><input type="checkbox" class="dow" value="4" onchange="calcDate()"> T5</label>
+            <label><input type="checkbox" class="dow" value="5" onchange="calcDate()"> T6</label>
+            <label><input type="checkbox" class="dow" value="6" onchange="calcDate()"> T7</label>
+            <label><input type="checkbox" class="dow" value="0" onchange="calcDate()"> CN</label>
+            <input type="number" id="in-buoi" value="12" style="width: 60px; margin-left: auto;" oninput="calcDate()">
+        </div>
+    </div>
+    <div class="input-group" style="background:#f9f9f9; padding:10px; border-radius:6px;">
+        <label>Thêm ngày nghỉ lễ:</label>
+        <div style="display:flex; gap:5px;"><input type="date" id="holiday-picker" style="flex:1;"><button onclick="addHoliday()">+ Thêm</button></div>
+        <div id="holiday-tags" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+    </div>
+    <div class="input-group"><label>Học phí (VNĐ):</label><input type="text" id="in-phi" placeholder="Điền học phí" oninput="formatMoney(this)"></div>
+    
+    <button class="btn-reset" onclick="resetForm()">TẠO MỚI (RESET)</button>
+    <button class="btn-new-student" id="btn-new" onclick="setNewStudentMode()">HỌC SINH MỚI</button>
+    <button class="btn-main" onclick="exportImg()">XUẤT ẢNH PHIẾU</button>
+</div>
+
+<div id="capture-area">
+    <div class="header">
+        <img src="https://i.postimg.cc/SNvy9X4J/logo.png" class="logo-img">
+        <div class="title-box">
+            <div class="title-main">THÔNG BÁO HỌC PHÍ</div>
+            <div class="mon-box">Môn: <span id="out-mon">---</span></div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="info-container">
+            <div class="row"><div class="label">Họ và tên HS</div><div class="separator">:</div><div class="value" id="out-ten">---</div></div>
+            
+            <div class="row" id="row-prev"><div class="label">Khóa học trước</div><div class="separator">:</div><div class="value" id="out-prev">Kết thúc khóa ngày --/--/----</div></div>
+            
+            <div class="row">
+                <div class="label" id="label-range">Khóa học tiếp theo</div>
+                <div class="separator">:</div>
+                <div class="value" id="out-range" style="font-weight:700;">Từ --/--/---- đến --/--/----</div>
+            </div>
+            
+            <div class="row"><div class="label">Học phí</div><div class="separator">:</div><div class="value"><span id="out-phi" style="font-weight:700;">0</span> vnđ/ khóa</div></div>
+            <div class="row"><div class="label">Hình thức đóng</div><div class="separator">:</div><div class="value">Chuyển khoản</div></div>
+            <div class="row"><div class="label">Số TK</div><div class="separator">:</div><div class="value">8817208420 - Ngân hàng BIDV</div></div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="label">Chủ TK</div><div class="separator">:</div>
+                <div class="value-multiline" style="margin-top:6px;">HO KINH DOANH TRUNG TAM DAO TAO<br>NGHE THUAT LESPACE ART</div>
+            </div>
+            <div class="row"><div class="label">Hotline</div><div class="separator">:</div><div class="value">0946.9191.66</div></div>
+        </div>
+
+        <div class="qr-side">
+            <img src="https://i.postimg.cc/MTfRkcSr/qrcode-3.png" class="qr-img">
+        </div>
+    </div>
+
+    <div class="footer">
+        Phụ huynh vui lòng hoàn tất học phí trước ngày nhập học.<br>
+        Phụ huynh chụp lại màn hình ck và gửi lại giáo viên quản lý để xác nhận. Trân trọng!
+    </div>
+</div>
+
+<script>
+    let holidays = [];
+    let isNewStudent = false;
+
+    function formatMoney(input) {
+        let v = input.value.replace(/\D/g, "");
+        v = v.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        input.value = v; updateUI();
+    }
+
+    function addHoliday() {
+        const h = document.getElementById('holiday-picker').value;
+        if (h && !holidays.includes(h)) { holidays.push(h); renderHolidays(); calcDate(); }
+    }
+
+    function renderHolidays() {
+        document.getElementById('holiday-tags').innerHTML = holidays.map(d => `<div class="holiday-tag">${new Date(d).toLocaleDateString('vi-VN')} <span onclick="removeHoliday('${d}')" style="cursor:pointer;color:red">×</span></div>`).join('');
+    }
+
+    function removeHoliday(d) { holidays = holidays.filter(x => x !== d); renderHolidays(); calcDate(); }
+
+    function validateDates() {
+        const p = document.getElementById('in-prev-end').value, s = document.getElementById('in-start').value;
+        if (p && s && new Date(p) >= new Date(s)) { alert("Ngày kết thúc khóa trước phải TRƯỚC ngày bắt đầu khóa sau!"); document.getElementById('in-prev-end').value = ""; }
+        updateUI();
+    }
+
+    function initSchedule() {
+        validateDates(); const s = document.getElementById('in-start').value;
+        if (!s) return; const d = new Date(s).getDay();
+        document.querySelectorAll('.dow').forEach(el => el.checked = (parseInt(el.value) === d));
+        calcDate();
+    }
+
+    function calcDate() {
+        const sVal = document.getElementById('in-start').value, num = parseInt(document.getElementById('in-buoi').value),
+              dows = Array.from(document.querySelectorAll('.dow:checked')).map(el => parseInt(el.value));
+        if (!sVal || !num || dows.length === 0) return;
+        let count = 0, temp = new Date(sVal), end = new Date(sVal);
+        while (count < num) {
+            if (dows.includes(temp.getDay()) && !holidays.includes(temp.toISOString().split('T')[0])) { end = new Date(temp); count++; }
+            if (count < num) temp.setDate(temp.getDate() + 1);
+        }
+        document.getElementById('out-range').innerText = `Từ ${new Date(sVal).toLocaleDateString('vi-VN')} - đến ${end.toLocaleDateString('vi-VN')}`;
+    }
+
+    function updateUI() {
+        document.getElementById('out-ten').innerText = document.getElementById('in-ten').value || "---";
+        document.getElementById('out-mon').innerText = document.getElementById('in-mon').value || "---";
+        document.getElementById('out-phi').innerText = document.getElementById('in-phi').value || "0";
+        const p = document.getElementById('in-prev-end').value;
+        document.getElementById('out-prev').innerText = p ? `Kết thúc khóa ngày ${new Date(p).toLocaleDateString('vi-VN')}` : "Kết thúc khóa ngày --/--/----";
+    }
+
+    function setNewStudentMode() {
+        isNewStudent = true;
+        // Cập nhật giao diện nhập liệu
+        const inPrev = document.getElementById('in-prev-end');
+        inPrev.value = "";
+        inPrev.disabled = true;
+        
+        // Cập nhật hiển thị trên phiếu
+        document.getElementById('row-prev').style.display = 'none';
+        document.getElementById('label-range').innerText = 'Khóa học bắt đầu';
+        
+        // Đổi màu nút để nhận biết
+        document.getElementById('btn-new').style.opacity = '0.6';
+        document.getElementById('btn-new').innerText = 'ĐANG Ở CHẾ ĐỘ HỌC SINH MỚI';
+    }
+
+    function resetForm() { 
+        if(confirm("Reset toàn bộ dữ liệu?")) { 
+            location.reload(); 
+        } 
+    }
+    
+    function exportImg() {
+        const ten = document.getElementById('in-ten').value, mon = document.getElementById('in-mon').value,
+              phi = document.getElementById('in-phi').value, start = document.getElementById('in-start').value;
+        
+        // Kiểm tra điều kiện: Nếu là HS mới thì không cần 'in-prev-end'
+        if (!ten || !mon || !phi || !start) { 
+            alert("Vui lòng điền đủ thông tin bắt buộc!"); 
+            return; 
+        }
+
+        const area = document.getElementById('capture-area');
+        const oldT = area.style.transform;
+        
+        document.fonts.ready.then(() => {
+            area.style.transform = "none";
+            html2canvas(area, { 
+                scale: 1, 
+                useCORS: true, 
+                allowTaint: true,
+                backgroundColor: null 
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `${mon}_${ten}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                area.style.transform = oldT;
+            });
+        });
+    }
+</script>
+</body>
+</html>
