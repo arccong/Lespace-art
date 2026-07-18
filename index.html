@@ -81,9 +81,9 @@
         </div>
         <div class="input-group">
             <label>Môn học:</label>
-            <select id="in-mon" onchange="updateUI()">
+            <select id="in-mon" onchange="applySubjectDefaults()">
                 <option value="" disabled selected>Điền môn học</option>
-                <option value="Piano">Piano</option><option value="Múa">Múa</option><option value="Dance">Dance</option><option value="Vẽ">Vẽ</option>
+                <option value="Piano">Piano</option><option value="Múa">Múa</option><option value="Vẽ">Vẽ</option>
             </select>
         </div>
     </div>
@@ -170,6 +170,23 @@
         return str.toLowerCase().replace(/(^|\s)\S/g, function(l) {
             return l.toUpperCase();
         });
+    }
+
+    function applySubjectDefaults() {
+        const mon = document.getElementById('in-mon').value;
+        const inBuoi = document.getElementById('in-buoi');
+        const inPhi = document.getElementById('in-phi');
+
+        if (mon === 'Piano') {
+            inBuoi.value = 48;
+            inPhi.value = "12.000.000";
+        } else if (mon === 'Múa' || mon === 'Vẽ') {
+            inBuoi.value = 24;
+            inPhi.value = "3.800.000";
+        }
+
+        calcDate();
+        updateUI();
     }
 
     function formatMoney(input) {
