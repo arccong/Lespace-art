@@ -261,6 +261,14 @@
         } 
     }
     
+    // Nhận diện iPhone/iPad (bao gồm iPad chạy iPadOS báo User-Agent giống Mac)
+    function isIOSDevice() {
+        const ua = navigator.userAgent;
+        const isIPhoneIPad = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+        const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+        return isIPhoneIPad || isIPadOS;
+    }
+
     function exportImg() {
         const ten = document.getElementById('in-ten').value, mon = document.getElementById('in-mon').value,
               phi = document.getElementById('in-phi').value, start = document.getElementById('in-start').value;
@@ -272,6 +280,7 @@
 
         const area = document.getElementById('capture-area');
         const oldT = area.style.transform;
+        const fileName = `${mon}_${ten}.png`;
         
         document.fonts.ready.then(() => {
             area.style.transform = "none";
@@ -281,11 +290,32 @@
                 allowTaint: true,
                 backgroundColor: null 
             }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `${mon}_${ten}.png`;
-                link.href = canvas.toDataURL("image/png");
-                link.click();
                 area.style.transform = oldT;
+
+                canvas.toBlob(async (blob) => {
+                    if (!blob) return;
+
+                    // iPhone / iPad: dùng Web Share API để lưu thẳng vào Thư viện ảnh
+                    if (isIOSDevice() && navigator.canShare) {
+                        const file = new File([blob], fileName, { type: 'image/png' });
+                        if (navigator.canShare({ files: [file] })) {
+                            try {
+                                await navigator.share({ files: [file] });
+                                return;
+                            } catch (err) {
+                                // Người dùng bấm Hủy hoặc trình duyệt chặn -> rơi xuống tải file như bình thường
+                                if (err && err.name === 'AbortError') return;
+                            }
+                        }
+                    }
+
+                    // Android / Windows / các trường hợp còn lại: tải file như cũ
+                    const link = document.createElement('a');
+                    link.download = fileName;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                }, 'image/png');
             });
         });
     }
