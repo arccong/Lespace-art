@@ -16,7 +16,11 @@
         label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 5px; color: #555; }
         input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         input:disabled { background: #f0f0f0; cursor: not-allowed; }
-        .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: #f9f9f9; padding: 10px; border-radius: 6px; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: #f9f9f9; padding: 10px; border-radius: 6px; align-items: flex-start; }
+        .day-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .day-item label { margin-bottom: 0; font-weight: normal; display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+        .ca-input { width: 46px !important; padding: 3px !important; text-align: center; font-size: 12px !important; }
+        .ca-hint { display: block; font-weight: 400; font-size: 11px; color: #888; margin-top: 2px; }
         .holiday-tag { background: #ffe58f; padding: 4px 10px; border-radius: 15px; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-top: 5px; }
 
         /* VÙNG PHIẾU CHÍNH */
@@ -102,15 +106,40 @@
         <div class="input-group"><label>Khóa sau bắt đầu:</label><input type="date" id="in-start" onchange="initSchedule()"></div>
     </div>
     <div class="input-group">
-        <label>Lịch học & Số buổi:</label>
+        <label>Ghi chú khóa trước:</label>
+        <input type="text" id="in-prev-note" value="Đã học đủ số buổi trong khóa" oninput="updateUI()">
+    </div>
+    <div class="input-group">
+        <label>Lịch học & Số buổi: <span class="ca-hint">(1 ca = 1 giờ học. 1 ngày: mặc định 2 ca | 2 ngày: mặc định 1 ca/ngày, có thể sửa)</span></label>
         <div class="checkbox-group">
-            <label><input type="checkbox" class="dow" value="1" onchange="calcDate()"> T2</label>
-            <label><input type="checkbox" class="dow" value="2" onchange="calcDate()"> T3</label>
-            <label><input type="checkbox" class="dow" value="3" onchange="calcDate()"> T4</label>
-            <label><input type="checkbox" class="dow" value="4" onchange="calcDate()"> T5</label>
-            <label><input type="checkbox" class="dow" value="5" onchange="calcDate()"> T6</label>
-            <label><input type="checkbox" class="dow" value="6" onchange="calcDate()"> T7</label>
-            <label><input type="checkbox" class="dow" value="0" onchange="calcDate()"> CN</label>
+            <div class="day-item">
+                <label><input type="checkbox" class="dow" value="1" onchange="handleDowChange()"> T2</label>
+                <input type="number" class="ca-input" data-day="1" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
+            </div>
+            <div class="day-item">
+                <label><input type="checkbox" class="dow" value="2" onchange="handleDowChange()"> T3</label>
+                <input type="number" class="ca-input" data-day="2" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
+            </div>
+            <div class="day-item">
+                <label><input type="checkbox" class="dow" value="3" onchange="handleDowChange()"> T4</label>
+                <input type="number" class="ca-input" data-day="3" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
+            </div>
+            <div class="day-item">
+                <label><input type="checkbox" class="dow" value="4" onchange="handleDowChange()"> T5</label>
+                <input type="number" class="ca-input" data-day="4" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
+            </div>
+            <div class="day-item">
+                <label><input type="checkbox" class="dow" value="5" onchange="handleDowChange()"> T6</label>
+                <input type="number" class="ca-input" data-day="5" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
+            </div>
+            <div class="day-item">
+                <label><input type="checkbox" class="dow" value="6" onchange="handleDowChange()"> T7</label>
+                <input type="number" class="ca-input" data-day="6" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
+            </div>
+            <div class="day-item">
+                <label><input type="checkbox" class="dow" value="0" onchange="handleDowChange()"> CN</label>
+                <input type="number" class="ca-input" data-day="0" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
+            </div>
             <input type="number" id="in-buoi" value="24" style="width: 60px; margin-left: auto;" oninput="calcDate()">
         </div>
     </div>
@@ -139,7 +168,13 @@
         <div class="info-container">
             <div class="row"><div class="label">Họ và tên HS</div><div class="separator">:</div><div class="value" id="out-ten">---</div></div>
             
-            <div class="row" id="row-prev"><div class="label">Khóa học trước</div><div class="separator">:</div><div class="value" id="out-prev">Kết thúc khóa ngày --/--/----</div></div>
+            <div class="row" id="row-prev">
+                <div class="label">Khóa học trước</div><div class="separator">:</div>
+                <div class="value">
+                    <div id="out-prev">Kết thúc khóa ngày --/--/----</div>
+                    <div id="out-prev-note" style="font-style: italic; font-weight: 400; font-size: 16px; margin-top: 2px;">(Đã học đủ số buổi trong khóa)</div>
+                </div>
+            </div>
             
             <div class="row">
                 <div class="label" id="label-range">Khóa học tiếp theo</div>
@@ -227,20 +262,62 @@
         validateDates(); const s = document.getElementById('in-start').value;
         if (!s) return; const d = new Date(s).getDay();
         document.querySelectorAll('.dow').forEach(el => el.checked = (parseInt(el.value) === d));
+        handleDowChange();
+    }
+
+    // Ẩn/hiện ô nhập số ca theo ngày được chọn, tự set mặc định số ca theo quy tắc,
+    // và giữ nguyên nếu người dùng đã tự sửa tay (đánh dấu qua dataset.custom)
+    function handleDowChange() {
+        const checkedDays = Array.from(document.querySelectorAll('.dow:checked')).map(el => el.value);
+
+        document.querySelectorAll('.ca-input').forEach(inp => {
+            const isChecked = checkedDays.includes(inp.dataset.day);
+            inp.style.display = isChecked ? 'inline-block' : 'none';
+            if (!isChecked) inp.dataset.custom = ''; // bỏ chọn ngày -> xóa cờ tùy chỉnh, lần chọn lại sẽ về mặc định
+        });
+
+        if (checkedDays.length === 1) {
+            setCaDefault(checkedDays[0], 2);
+        } else if (checkedDays.length === 2) {
+            checkedDays.forEach(d => setCaDefault(d, 1));
+        }
+
+        calcDate();
+    }
+
+    function setCaDefault(day, value) {
+        const inp = document.querySelector(`.ca-input[data-day="${day}"]`);
+        if (inp && inp.dataset.custom !== 'true') inp.value = value;
+    }
+
+    function onCaManualChange(input) {
+        input.dataset.custom = 'true';
         calcDate();
     }
 
     function calcDate() {
         const sVal = document.getElementById('in-start').value, num = parseInt(document.getElementById('in-buoi').value),
-              dows = Array.from(document.querySelectorAll('.dow:checked')).map(el => parseInt(el.value));
-        
+              dowCheckboxes = Array.from(document.querySelectorAll('.dow:checked'));
+
+        // Map: thứ trong tuần (0-6) -> số ca/buổi của ngày đó (mỗi ca = 1 buổi)
+        const caMap = {};
+        dowCheckboxes.forEach(cb => {
+            const caInput = document.querySelector(`.ca-input[data-day="${cb.value}"]`);
+            caMap[cb.value] = caInput ? (parseInt(caInput.value) || 1) : 1;
+        });
+        const dows = Object.keys(caMap).map(Number);
+
         // Cập nhật số buổi hiển thị trên phiếu ngay lập tức
         document.getElementById('out-buoi-display').innerText = num || "0";
-        
+
         if (!sVal || !num || dows.length === 0) return;
         let count = 0, temp = new Date(sVal), end = new Date(sVal);
         while (count < num) {
-            if (dows.includes(temp.getDay()) && !holidays.includes(temp.toISOString().split('T')[0])) { end = new Date(temp); count++; }
+            const dayOfWeek = temp.getDay();
+            if (dows.includes(dayOfWeek) && !holidays.includes(temp.toISOString().split('T')[0])) {
+                end = new Date(temp);
+                count += caMap[dayOfWeek];
+            }
             if (count < num) temp.setDate(temp.getDate() + 1);
         }
         document.getElementById('out-range').innerText = `Từ ${new Date(sVal).toLocaleDateString('vi-VN')} - đến ${end.toLocaleDateString('vi-VN')}`;
@@ -252,6 +329,8 @@
         document.getElementById('out-phi-display').innerText = document.getElementById('in-phi').value || "0";
         const p = document.getElementById('in-prev-end').value;
         document.getElementById('out-prev').innerText = p ? `Kết thúc khóa ngày ${new Date(p).toLocaleDateString('vi-VN')}` : "Kết thúc khóa ngày --/--/----";
+        const note = document.getElementById('in-prev-note').value.trim();
+        document.getElementById('out-prev-note').innerText = note ? `(${note})` : "";
     }
 
     function setNewStudentMode() {
@@ -259,6 +338,7 @@
         const inPrev = document.getElementById('in-prev-end');
         inPrev.value = "";
         inPrev.disabled = true;
+        document.getElementById('in-prev-note').disabled = true;
         document.getElementById('row-prev').style.display = 'none';
         document.getElementById('label-range').innerText = 'Khóa học bắt đầu';
         document.getElementById('btn-new').style.opacity = '0.6';
