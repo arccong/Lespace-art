@@ -789,17 +789,27 @@
 
     // Chụp 1 vùng phiếu (area) và lưu ảnh - dùng chung cho cả 2 loại phiếu
     function captureAndSave(area, fileName) {
-        const oldT = area.style.transform;
+        // Phải reset CẢ transform của khung cha (.preview-scaler) lẫn của area,
+        // vì html2canvas render lỗi chữ (đè/lệch chữ) khi phần tử cha đang có transform:scale.
+        const scaler = document.querySelector('.preview-scaler');
+        const oldAreaT = area.style.transform;
+        const oldScalerT = scaler ? scaler.style.transform : '';
 
         document.fonts.ready.then(() => {
             area.style.transform = "none";
+            if (scaler) scaler.style.transform = "none";
+
             html2canvas(area, { 
                 scale: 1, 
                 useCORS: true, 
                 allowTaint: true,
-                backgroundColor: null 
+                backgroundColor: null,
+                width: area.offsetWidth,
+                height: area.offsetHeight
             }).then(canvas => {
-                area.style.transform = oldT;
+                area.style.transform = oldAreaT;
+                if (scaler) scaler.style.transform = oldScalerT;
+                updatePreviewScale();
 
                 canvas.toBlob(async (blob) => {
                     if (!blob) return;
