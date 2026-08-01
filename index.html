@@ -37,7 +37,9 @@
         .app-header { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; background: rgba(250,245,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
         .app-header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
         .app-header img { height: 34px; width: auto; flex-shrink: 0; }
-        .app-header-text .tagline { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; color: var(--maroon); }
+        .app-header-text { min-width: 0; overflow: hidden; }
+        .app-header-text .tagline { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; color: var(--maroon); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @media (max-width: 680px) { .app-header-text { display: none; } }
 
         .ticket-tabs { display: flex; gap: 4px; background: var(--sand); padding: 4px; border-radius: 100px; flex-shrink: 0; }
         .tab-btn { border: none; background: transparent; padding: 7px 16px; border-radius: 100px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; color: #686868; cursor: pointer; transition: .15s; white-space: nowrap; }
@@ -165,8 +167,11 @@
         .preview-stage { width: 100%; overflow: hidden; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border); background: var(--paper); }
         .preview-scaler { width: 1280px; transform-origin: top left; }
 
-        textarea { font-family: 'Montserrat', sans-serif; width: 100%; padding: 11px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); box-sizing: border-box; font-size: 14px; color: var(--ink); background: #fff; resize: vertical; min-height: 76px; line-height: 1.5; transition: border-color .15s, box-shadow .15s; }
+        textarea { font-family: 'Montserrat', sans-serif; width: 100%; padding: 11px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm) var(--radius-sm) 0 0; box-sizing: border-box; font-size: 14px; color: var(--ink); background: #fff; resize: none; min-height: 76px; line-height: 1.5; transition: border-color .15s, box-shadow .15s; display: block; }
         textarea:focus { outline: none; border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93,31,31,0.10); }
+        .resize-handle { width: 100%; height: 22px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1.5px solid var(--border); border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); cursor: ns-resize; touch-action: none; margin-top: -1.5px; }
+        .resize-handle::before { content: ''; width: 44px; height: 6px; border-radius: 4px; background: var(--border); transition: background .15s; }
+        .resize-handle:hover::before, .resize-handle.dragging::before { background: var(--clay); }
         .field-hint { font-size: 11px; color: var(--muted); font-weight: 500; margin-top: -3px; }
 
         /* Nút bấm */
@@ -370,6 +375,7 @@
         </div>
         <div class="field">
             <textarea id="nx-kienthuc" placeholder="Trình độ 5&#10;Chồng âm&#10;Nốt kép, nốt đơn, nốt đen..." oninput="updateNxUI()"></textarea>
+            <div class="resize-handle" data-target="nx-kienthuc"></div>
             <div class="field-hint">Mỗi dòng là 1 ý, sẽ hiện thành gạch đầu dòng trên phiếu</div>
         </div>
     </div>
@@ -381,6 +387,7 @@
         </div>
         <div class="field">
             <textarea id="nx-tphoanthanh" placeholder="Liên khúc: Tôi bắt đầu - Bước chân đầu tiên&#10;Valse ngắn&#10;Hội làng" oninput="updateNxUI()"></textarea>
+            <div class="resize-handle" data-target="nx-tphoanthanh"></div>
             <div class="field-hint">Mỗi dòng là 1 tác phẩm, tự động hiển thị viết hoa trên phiếu</div>
         </div>
     </div>
@@ -392,6 +399,7 @@
         </div>
         <div class="field">
             <textarea id="nx-tpdanghoc" placeholder="Minuet in G" oninput="updateNxUI()"></textarea>
+            <div class="resize-handle" data-target="nx-tpdanghoc"></div>
         </div>
     </div>
 
@@ -402,6 +410,7 @@
         </div>
         <div class="field">
             <textarea id="nx-nhanxet" placeholder="Con chịu khó vỡ bài, hoàn thành phần tự luyện...&#10;Tập trung nghe cô giảng..." oninput="updateNxUI()"></textarea>
+            <div class="resize-handle" data-target="nx-nhanxet"></div>
             <div class="field-hint">Mỗi dòng là 1 ý</div>
         </div>
     </div>
@@ -413,6 +422,7 @@
         </div>
         <div class="field">
             <textarea id="nx-kehoach" placeholder="Vỡ những tác phẩm dài hơn&#10;Tập luyện ngón kỹ thuật (Hanon, Etude)" oninput="updateNxUI()"></textarea>
+            <div class="resize-handle" data-target="nx-kehoach"></div>
             <div class="field-hint">Mỗi dòng là 1 ý</div>
         </div>
     </div>
@@ -582,6 +592,37 @@
     window.addEventListener('resize', updatePreviewScale);
     window.addEventListener('orientationchange', updatePreviewScale);
     updatePreviewScale();
+
+    // Thanh kéo dãn textarea tùy chỉnh (to, nằm giữa cạnh dưới) - dễ thao tác trên mobile
+    // hơn tay kéo mặc định của trình duyệt (vốn nhỏ, nằm ở góc phải).
+    function initResizeHandles() {
+        document.querySelectorAll('.resize-handle').forEach(handle => {
+            const textarea = document.getElementById(handle.dataset.target);
+            if (!textarea) return;
+            let startY = 0, startH = 0;
+
+            function onMove(e) {
+                const y = e.clientY;
+                const newH = Math.max(60, startH + (y - startY));
+                textarea.style.height = newH + 'px';
+                updatePreviewScale();
+            }
+            function onUp() {
+                handle.classList.remove('dragging');
+                document.removeEventListener('pointermove', onMove);
+                document.removeEventListener('pointerup', onUp);
+            }
+            handle.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                handle.classList.add('dragging');
+                startY = e.clientY;
+                startH = textarea.offsetHeight;
+                document.addEventListener('pointermove', onMove);
+                document.addEventListener('pointerup', onUp);
+            });
+        });
+    }
+    initResizeHandles();
 
     // Chuyển đổi giữa Phiếu học phí và Phiếu nhận xét
     function switchTicket(name) {
