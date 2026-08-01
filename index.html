@@ -5,69 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
     <title>L'espace Art - Phiếu Học Phí Hoàn Thiện</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Fraunces:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { --primary: #7b2e2b; --paper: #F2E7D9; --text-color: #5D1F1F; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #e0e0e0; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        
-        .controls { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; max-width: 600px; box-sizing: border-box; }
-        .input-group { margin-bottom: 12px; }
-        label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 5px; color: #555; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        input:disabled { background: #f0f0f0; cursor: not-allowed; }
-        .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: #f9f9f9; padding: 10px; border-radius: 6px; align-items: flex-start; }
-        .day-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .day-item label { margin-bottom: 0; font-weight: normal; display: flex; align-items: center; gap: 3px; white-space: nowrap; }
-        .ca-input { width: 46px !important; padding: 3px !important; text-align: center; font-size: 12px !important; }
-        .ca-hint { display: block; font-weight: 400; font-size: 11px; color: #888; margin-top: 2px; }
-        .holiday-tag { background: #ffe58f; padding: 4px 10px; border-radius: 15px; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+        :root {
+            --ink: #2A1A12;
+            --maroon: #5D1F1F;
+            --maroon-dark: #461616;
+            --clay: #B8703F;
+            --forest: #3F6B4E;
+            --forest-dark: #305038;
+            --cream: #FAF5EC;
+            --card: #FFFFFF;
+            --sand: #F1E7D9;
+            --border: #E6D8C4;
+            --muted: #8B7461;
+            --paper: #ede1d3;
+            --text-color: #5D1F1F;
+            --primary: #5D1F1F;
+            --radius-sm: 9px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow-sm: 0 1px 3px rgba(42,26,18,0.07);
+            --shadow-md: 0 6px 20px rgba(42,26,18,0.09);
+            --shadow-lg: 0 16px 40px rgba(42,26,18,0.14);
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--cream); color: var(--ink); margin: 0; }
 
-        /* VÙNG PHIẾU CHÍNH */
+        /* Header ứng dụng */
+        .app-header { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 12px 24px; background: rgba(250,245,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+        .app-header img { height: 34px; width: auto; }
+        .app-header-text .brand { font-family: 'Fraunces', serif; font-weight: 600; font-size: 18px; color: var(--maroon); line-height: 1.15; }
+        .app-header-text .tagline { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+        /* Bố cục 2 cột: form + xem trước */
+        .app-main { max-width: 1360px; margin: 0 auto; padding: 28px 24px 56px; display: grid; grid-template-columns: minmax(320px, 440px) 1fr; gap: 28px; align-items: start; }
+        @media (max-width: 980px) { .app-main { grid-template-columns: 1fr; padding: 18px 14px 40px; gap: 20px; } }
+
+        .form-panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 22px; display: flex; flex-direction: column; gap: 4px; }
+
+        .section { display: flex; flex-direction: column; gap: 12px; padding: 18px 0; }
+        .section:first-child { padding-top: 2px; }
+        .section + .section { border-top: 1px dashed var(--border); }
+        .section-title { display: flex; align-items: center; gap: 8px; font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; color: var(--maroon); }
+        .icon { width: 18px; height: 18px; flex-shrink: 0; }
+        .section-hint { font-size: 11.5px; color: var(--muted); font-weight: 500; margin-top: -6px; line-height: 1.4; }
+
+        .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .field { display: flex; flex-direction: column; gap: 6px; }
+
+        .input-group { margin-bottom: 12px; }
+        label, .field label { display: block; font-weight: 600; font-size: 12px; margin-bottom: 0; color: var(--ink); letter-spacing: .01em; }
+        input, select { font-family: 'Montserrat', sans-serif; width: 100%; padding: 11px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); box-sizing: border-box; font-size: 14px; color: var(--ink); background: #fff; transition: border-color .15s, box-shadow .15s; }
+        input:focus, select:focus { outline: none; border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93,31,31,0.10); }
+        input:disabled { background: var(--sand); color: var(--muted); cursor: not-allowed; }
+        input::placeholder { color: #C2AF9B; }
+
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: var(--sand); padding: 12px; border-radius: var(--radius-sm); align-items: flex-start; }
+        .day-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .day-item label { margin-bottom: 0; font-weight: 600; font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 4px; white-space: nowrap; padding: 9px 11px; border: 1.5px solid var(--border); border-radius: 10px; background: #fff; cursor: pointer; transition: .15s; user-select: none; }
+        .day-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--maroon); }
+        .day-item label:has(input:checked) { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+        .ca-input { width: 46px !important; padding: 5px 4px !important; text-align: center; font-size: 12px !important; font-weight: 700; border-radius: 8px !important; }
+        .ca-hint { display: block; font-weight: 400; font-size: 11px; color: #888; margin-top: 2px; }
+        #in-buoi { width: 64px !important; margin-left: auto; font-weight: 700; text-align: center; align-self: center; }
+        .holiday-tag { background: #fff; border: 1.5px solid var(--clay); color: var(--clay); padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+        /* VÙNG PHIẾU CHÍNH - theo thiết kế Figma */
         #capture-area { 
-            width: 1280px; height: 720px; background: var(--paper); position: relative; 
+            width: 1280px; height: 720px; background: var(--paper);
             color: var(--text-color); flex-shrink: 0; overflow: hidden;
-            font-family: 'Montserrat', sans-serif; 
+            font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 20px;
+            display: flex; flex-direction: column;
         }
 
-        .header { background: white; height: 192px; padding: 0 140px; display: flex; justify-content: space-between; align-items: center; }
-        .logo-img { height: 110px; width: auto; }
+        .header { background: white; height: 160px; flex-shrink: 0; box-sizing: border-box; padding: 0 162px; display: flex; align-items: center; justify-content: center; }
+        .header-inner { width: 956px; display: flex; justify-content: space-between; align-items: center; }
+        .logo-img { height: 80px; width: auto; max-width: 244px; object-fit: contain; }
         .title-box { text-align: right; }
         
         .title-main {
-            font-family: 'Segoe UI', Arial, sans-serif !important;
-            color: var(--primary); 
-            font-size: 42px; 
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: var(--text-color); 
+            font-size: 40px; 
             font-weight: 700; 
-            letter-spacing: 1px;
+            line-height: 64px;
+            letter-spacing: -0.25px;
+            text-transform: uppercase;
         }
         
         .mon-box {
+            font-family: 'Segoe UI', Arial, sans-serif;
             font-size: 28px; 
+            line-height: 34px;
             text-transform: uppercase; 
-            font-weight: bold;
-            color: var(--primary);
+            font-weight: 600;
+            color: var(--text-color);
         }
 
         #out-mon { 
-            font-family: 'Segoe UI', Arial, sans-serif !important; 
-            display: inline-block;
-            margin-top: 5px;
+            font-family: 'Segoe UI', Arial, sans-serif; 
         }
 
-        .content { padding: 48px 140px; display: flex; justify-content: space-between; }
-        .info-container { width: 68%; font-size: 20px; line-height: 1.7; }
-        .row { display: flex; align-items: flex-start; margin-bottom: 4px; }
-        .label { width: 210px; flex-shrink: 0; font-weight: 400; }
-        .separator { width: 20px; flex-shrink: 0; }
-        .value { flex-grow: 1; font-weight: 500; }
-        
-        .value-multiline { flex-grow: 1; font-weight: 700; font-size: 16px; text-transform: uppercase; line-height: 1.4; }
+        .body-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; }
 
-        .qr-side { width: 25%; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .qr-img { width: 270px; height: auto; background: transparent; }
+        .content { padding: 48px 100px 0 158px; box-sizing: border-box; display: flex; align-items: flex-end; justify-content: space-between; }
+        .info-container { display: flex; flex-direction: column; gap: 8px; flex: 1 0 0; min-width: 0; }
+        .row { display: flex; align-items: center; gap: 12px; width: 100%; }
+        .row.align-start { align-items: flex-start; }
+        .label-wrap { display: flex; align-items: center; justify-content: space-between; width: 280px; flex-shrink: 0; font-weight: 500; }
+        .row.align-start .label-wrap { align-items: flex-start; }
+        .colon { flex-shrink: 0; }
+        .value { font-weight: 500; flex: 1 0 0; min-width: 0; }
+        .value-bold { font-weight: 700; }
+        .value-uppercase { text-transform: uppercase; font-weight: 500; line-height: 1.4; }
+
+        .note { font-style: italic; font-weight: 500; font-size: 18px; margin-top: 2px; }
+
+        .qr-side { width: 270px; flex-shrink: 0; }
+        .qr-img { width: 270px; height: 293px; border-radius: 10px; object-fit: cover; mix-blend-mode: multiply; }
         
-        .footer { position: absolute; bottom: 48px; width: 100%; text-align: center; font-style: italic; font-size: 18px; line-height: 1.5; color: #5D1F1F; }
+        .footer { background: var(--paper); padding: 24px 0; width: 100%; box-sizing: border-box; text-align: center; font-style: italic; font-weight: 500; font-size: 18px; line-height: normal; color: var(--text-color); }
 
         /* Chặn iOS tự động tô xanh + gạch chân số điện thoại/số TK trong vùng phiếu */
         #capture-area a,
@@ -78,39 +137,87 @@
             font: inherit !important;
         }
 
-        .btn-main { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 10px; }
-        .btn-new-student { background: #28a745; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; width: 100%; margin-top: 10px; }
-        .btn-reset { background: #f0f0f0; color: #444; border: 1px solid #ccc; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 15px; }
+        /* Khung xem trước phiếu (responsive, scale bằng JS thay vì hack margin âm) */
+        .preview-panel { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 78px; }
+        @media (max-width: 980px) { .preview-panel { position: static; } }
+        .preview-label { display: flex; align-items: center; gap: 8px; font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; color: var(--maroon); }
+        .preview-stage { width: 100%; overflow: hidden; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border); background: var(--paper); }
+        .preview-scaler { width: 1280px; height: 720px; transform-origin: top left; }
 
-        @media (max-width: 1024px) { #capture-area { transform: scale(0.65); transform-origin: top center; margin-bottom: -200px; } }
+        /* Nút bấm */
+        .btn { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; border-radius: 12px; padding: 14px 16px; cursor: pointer; border: none; transition: .15s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--maroon); color: #fff; box-shadow: var(--shadow-sm); }
+        .btn-primary:hover { background: var(--maroon-dark); }
+        .btn-secondary { background: #fff; color: var(--forest); border: 1.5px solid var(--forest); }
+        .btn-secondary:hover { background: var(--forest); color: #fff; }
+        .btn-ghost { background: transparent; color: var(--muted); font-weight: 600; padding: 6px 4px; text-decoration: underline; text-underline-offset: 3px; }
+        .btn-ghost:hover { color: var(--ink); }
+
+        .action-bar { position: sticky; bottom: 0; margin: 14px -22px -22px; padding: 14px 22px 20px; background: linear-gradient(to top, var(--card) 65%, rgba(255,255,255,0)); display: flex; flex-direction: column; gap: 10px; }
+        .action-row { display: flex; gap: 10px; }
+        .action-row .btn { flex: 1; }
     </style>
 </head>
 <body>
 
-<div class="controls">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div class="input-group">
-            <label>Tên học sinh:</label>
-            <input type="text" id="in-ten" placeholder="Điền tên học sinh" oninput="this.value = formatName(this.value); updateUI()">
+<header class="app-header">
+    <img src="logo.png" alt="Lespace Art">
+    <div class="app-header-text">
+        <div class="brand">Lespace Art</div>
+        <div class="tagline">Tạo phiếu thông báo học phí</div>
+    </div>
+</header>
+
+<div class="app-main">
+<div class="form-panel">
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6"/></svg>
+            Học sinh
         </div>
-        <div class="input-group">
-            <label>Môn học:</label>
-            <select id="in-mon" onchange="applySubjectDefaults()">
-                <option value="" disabled selected>Điền môn học</option>
-                <option value="Piano">Piano</option><option value="Múa">Múa</option><option value="Vẽ">Vẽ</option>
-            </select>
+        <div class="field-row">
+            <div class="field">
+                <label>Tên học sinh</label>
+                <input type="text" id="in-ten" placeholder="Điền tên học sinh" oninput="this.value = formatName(this.value); updateUI()">
+            </div>
+            <div class="field">
+                <label>Môn học</label>
+                <select id="in-mon" onchange="applySubjectDefaults()">
+                    <option value="" disabled selected>Điền môn học</option>
+                    <option value="Piano">Piano</option><option value="Múa">Múa</option><option value="Vẽ">Vẽ</option>
+                </select>
+            </div>
         </div>
     </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <div class="input-group"><label>Khóa trước kết thúc:</label><input type="date" id="in-prev-end" onchange="validateDates()"></div>
-        <div class="input-group"><label>Khóa sau bắt đầu:</label><input type="date" id="in-start" onchange="initSchedule()"></div>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+            Khóa học
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Khóa trước kết thúc</label>
+                <input type="date" id="in-prev-end" onchange="validateDates()">
+            </div>
+            <div class="field">
+                <label>Khóa sau bắt đầu</label>
+                <input type="date" id="in-start" onchange="initSchedule()">
+            </div>
+        </div>
+        <div class="field">
+            <label>Ghi chú khóa trước</label>
+            <input type="text" id="in-prev-note" value="Đã học đủ số buổi trong khóa" oninput="updateUI()">
+        </div>
     </div>
-    <div class="input-group">
-        <label>Ghi chú khóa trước:</label>
-        <input type="text" id="in-prev-note" value="Đã học đủ số buổi trong khóa" oninput="updateUI()">
-    </div>
-    <div class="input-group">
-        <label>Lịch học & Số buổi: <span class="ca-hint">(1 ca = 1 giờ học. 1 ngày: mặc định 2 ca | 2 ngày: mặc định 1 ca/ngày, có thể sửa)</span></label>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+            Lịch học &amp; số buổi
+        </div>
+        <div class="section-hint">1 ca = 1 giờ học · chọn 1 ngày mặc định 2 ca · chọn 2 ngày mặc định 1 ca/ngày (có thể sửa)</div>
         <div class="checkbox-group">
             <div class="day-item">
                 <label><input type="checkbox" class="dow" value="1" onchange="handleDowChange()"> T2</label>
@@ -140,75 +247,154 @@
                 <label><input type="checkbox" class="dow" value="0" onchange="handleDowChange()"> CN</label>
                 <input type="number" class="ca-input" data-day="0" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
             </div>
-            <input type="number" id="in-buoi" value="24" style="width: 60px; margin-left: auto;" oninput="calcDate()">
+            <input type="number" id="in-buoi" value="24" oninput="calcDate()">
         </div>
     </div>
-    <div class="input-group" style="background:#f9f9f9; padding:10px; border-radius:6px;">
-        <label>Thêm ngày nghỉ lễ:</label>
-        <div style="display:flex; gap:5px;"><input type="date" id="holiday-picker" style="flex:1;"><button onclick="addHoliday()">+ Thêm</button></div>
-        <div id="holiday-tags" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v18"/><path d="M6 4.5c2-1.2 4-1.2 6 0s4 1.2 6 0v9c-2 1.2-4 1.2-6 0s-4-1.2-6 0z"/></svg>
+            Ngày nghỉ lễ
+        </div>
+        <div style="display:flex; gap:8px;">
+            <input type="date" id="holiday-picker" style="flex:1;">
+            <button type="button" class="btn btn-secondary" style="padding:11px 18px;" onclick="addHoliday()">+ Thêm</button>
+        </div>
+        <div id="holiday-tags" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
     </div>
-    <div class="input-group"><label>Học phí (VNĐ):</label><input type="text" id="in-phi" placeholder="Điền học phí" oninput="formatMoney(this)"></div>
-    
-    <button class="btn-reset" onclick="resetForm()">TẠO MỚI (RESET)</button>
-    <button class="btn-new-student" id="btn-new" onclick="setNewStudentMode()">HỌC SINH MỚI</button>
-    <button class="btn-main" onclick="exportImg()">XUẤT ẢNH PHIẾU</button>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="18" height="12" rx="2"/><path d="M3 10.5h18"/><circle cx="16.5" cy="14.5" r="1"/></svg>
+            Học phí
+        </div>
+        <div class="field">
+            <label>Học phí (VNĐ)</label>
+            <input type="text" id="in-phi" placeholder="Điền học phí" oninput="formatMoney(this)">
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <div class="action-row">
+            <button class="btn btn-secondary" id="btn-new" onclick="setNewStudentMode()">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6"/></svg>
+                Học sinh mới
+            </button>
+        </div>
+        <button class="btn btn-primary" onclick="exportImg()">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            Xuất ảnh phiếu
+        </button>
+        <button class="btn btn-ghost" onclick="resetForm()" style="align-self:center;">Tạo mới (reset)</button>
+    </div>
+
 </div>
 
+<div class="preview-panel">
+    <div class="preview-label">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
+        Xem trước phiếu
+    </div>
+    <div class="preview-stage">
+    <div class="preview-scaler">
 <div id="capture-area">
     <div class="header">
-        <img src="logo.png" class="logo-img">
-        <div class="title-box">
-            <div class="title-main">THÔNG BÁO HỌC PHÍ</div>
-            <div class="mon-box">Môn: <span id="out-mon">---</span></div>
+        <div class="header-inner">
+            <img src="logo.png" class="logo-img">
+            <div class="title-box">
+                <div class="title-main">Thông báo học phí</div>
+                <div class="mon-box">Môn: <span id="out-mon">---</span></div>
+            </div>
         </div>
     </div>
 
-    <div class="content">
-        <div class="info-container">
-            <div class="row"><div class="label">Họ và tên HS</div><div class="separator">:</div><div class="value" id="out-ten">---</div></div>
-            
-            <div class="row" id="row-prev">
-                <div class="label">Khóa học trước</div><div class="separator">:</div>
-                <div class="value">
-                    <div id="out-prev">Kết thúc khóa ngày --/--/----</div>
-                    <div id="out-prev-note" style="font-style: italic; font-weight: 400; font-size: 16px; margin-top: 2px;">(Đã học đủ số buổi trong khóa)</div>
+    <div class="body-wrap">
+        <div class="content">
+            <div class="info-container">
+                <div class="row">
+                    <div class="label-wrap"><span>Họ và tên HS</span><span class="colon">:</span></div>
+                    <div class="value" id="out-ten">---</div>
+                </div>
+
+                <div class="row align-start" id="row-prev">
+                    <div class="label-wrap"><span>Khóa học trước</span><span class="colon">:</span></div>
+                    <div class="value">
+                        <div id="out-prev">Kết thúc khóa ngày --/--/----</div>
+                        <div id="out-prev-note" class="note">(Đã học đủ số buổi trong khóa)</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="label-wrap"><span id="label-range">Khóa học tiếp theo</span><span class="colon">:</span></div>
+                    <div class="value value-bold" id="out-range">Từ --/--/---- đến --/--/----</div>
+                </div>
+
+                <div class="row">
+                    <div class="label-wrap"><span>Lịch học</span><span class="colon">:</span></div>
+                    <div class="value value-bold" id="out-schedule">---</div>
+                </div>
+
+                <div class="row">
+                    <div class="label-wrap"><span>Học phí</span><span class="colon">:</span></div>
+                    <div class="value"><span class="value-bold" id="out-phi-display">0</span> vnđ/ khóa/ <span id="out-buoi-display">24</span> buổi</div>
+                </div>
+
+                <div class="row">
+                    <div class="label-wrap"><span>Hình thức đóng học phí</span><span class="colon">:</span></div>
+                    <div class="value">Chuyển khoản</div>
+                </div>
+
+                <div class="row">
+                    <div class="label-wrap"><span>Số TK</span><span class="colon">:</span></div>
+                    <div class="value"><span class="value-bold">8817208420</span> - Ngân hàng BIDV</div>
+                </div>
+
+                <div class="row align-start">
+                    <div class="label-wrap"><span>Chủ TK</span><span class="colon">:</span></div>
+                    <div class="value value-uppercase">Ho Kinh Doanh Trung Tam<br>Dao Tao Nghe Thuat Lespace Art</div>
+                </div>
+
+                <div class="row">
+                    <div class="label-wrap"><span>Hotline</span><span class="colon">:</span></div>
+                    <div class="value">0946.9191.66</div>
                 </div>
             </div>
-            
-            <div class="row">
-                <div class="label" id="label-range">Khóa học tiếp theo</div>
-                <div class="separator">:</div>
-                <div class="value" id="out-range" style="font-weight:700;">Từ --/--/---- đến --/--/----</div>
+
+            <div class="qr-side">
+                <img src="qrcode-3.png" class="qr-img">
             </div>
-            
-            <div class="row">
-                <div class="label">Học phí</div><div class="separator">:</div>
-                <div class="value"><span id="out-phi-display" style="font-weight:700;">0</span> vnđ/ khóa/ <span id="out-buoi-display">24</span> buổi</div>
-            </div>
-            <div class="row"><div class="label">Hình thức đóng</div><div class="separator">:</div><div class="value">Chuyển khoản</div></div>
-            <div class="row"><div class="label">Số TK</div><div class="separator">:</div><div class="value">8817208420 - Ngân hàng BIDV</div></div>
-            <div class="row" style="margin-top: 5px;">
-                <div class="label">Chủ TK</div><div class="separator">:</div>
-                <div class="value-multiline" style="margin-top:6px;">HO KINH DOANH TRUNG TAM DAO TAO<br>NGHE THUAT LESPACE ART</div>
-            </div>
-            <div class="row"><div class="label">Hotline</div><div class="separator">:</div><div class="value">0946.9191.66</div></div>
         </div>
 
-        <div class="qr-side">
-            <img src="qrcode-3.png" class="qr-img">
+        <div class="footer">
+            Phụ huynh vui lòng hoàn tất học phí trước ngày nhập học.<br>
+            Phụ huynh chụp lại màn hình ck và gửi lại giáo viên quản lý để xác nhận.<br>
+            Trân trọng!
         </div>
     </div>
-
-    <div class="footer">
-        Phụ huynh vui lòng hoàn tất học phí trước ngày nhập học.<br>
-        Phụ huynh chụp lại màn hình ck và gửi lại giáo viên quản lý để xác nhận. Trân trọng!
     </div>
+</div>
+</div>
+</div>
 </div>
 
 <script>
     let holidays = [];
     let isNewStudent = false;
+
+    // Co giãn khung xem trước (1280x720) vừa khít mọi kích thước màn hình.
+    // Scale được đặt trên .preview-scaler (KHÔNG phải #capture-area), nên không
+    // ảnh hưởng tới exportImg() - ảnh xuất ra luôn giữ đúng độ phân giải gốc 1280x720.
+    function updatePreviewScale() {
+        const stage = document.querySelector('.preview-stage');
+        const scaler = document.querySelector('.preview-scaler');
+        if (!stage || !scaler) return;
+        const scale = Math.min(1, stage.clientWidth / 1280);
+        scaler.style.transform = `scale(${scale})`;
+        stage.style.height = (720 * scale) + 'px';
+    }
+    window.addEventListener('resize', updatePreviewScale);
+    window.addEventListener('orientationchange', updatePreviewScale);
+    updatePreviewScale();
 
     // Tự động viết hoa chữ cái đầu và sau dấu cách
     function formatName(str) {
@@ -267,6 +453,16 @@
 
     // Ẩn/hiện ô nhập số ca theo ngày được chọn, tự set mặc định số ca theo quy tắc,
     // và giữ nguyên nếu người dùng đã tự sửa tay (đánh dấu qua dataset.custom)
+    // Nhãn tiếng Việt và thứ tự hiển thị Thứ 2 -> Chủ Nhật
+    const dowLabels = {1:'Thứ 2', 2:'Thứ 3', 3:'Thứ 4', 4:'Thứ 5', 5:'Thứ 6', 6:'Thứ 7', 0:'Chủ Nhật'};
+    const dowOrder = [1,2,3,4,5,6,0];
+
+    function updateScheduleText() {
+        const checked = Array.from(document.querySelectorAll('.dow:checked')).map(el => parseInt(el.value));
+        const labels = dowOrder.filter(d => checked.includes(d)).map(d => dowLabels[d]);
+        document.getElementById('out-schedule').innerText = labels.length ? labels.join(' - ') : '---';
+    }
+
     function handleDowChange() {
         const checkedDays = Array.from(document.querySelectorAll('.dow:checked')).map(el => el.value);
 
@@ -282,6 +478,7 @@
             checkedDays.forEach(d => setCaDefault(d, 1));
         }
 
+        updateScheduleText();
         calcDate();
     }
 
