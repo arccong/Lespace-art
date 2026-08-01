@@ -34,10 +34,15 @@
         body { font-family: 'Montserrat', sans-serif; background: var(--cream); color: var(--ink); margin: 0; }
 
         /* Header ứng dụng */
-        .app-header { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 12px 24px; background: rgba(250,245,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
-        .app-header img { height: 34px; width: auto; }
-        .app-header-text .brand { font-family: 'Fraunces', serif; font-weight: 600; font-size: 18px; color: var(--maroon); line-height: 1.15; }
-        .app-header-text .tagline { font-size: 12px; color: var(--muted); font-weight: 500; }
+        .app-header { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; background: rgba(250,245,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
+        .app-header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .app-header img { height: 34px; width: auto; flex-shrink: 0; }
+        .app-header-text .tagline { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; color: var(--maroon); }
+
+        .ticket-tabs { display: flex; gap: 4px; background: var(--sand); padding: 4px; border-radius: 100px; flex-shrink: 0; }
+        .tab-btn { border: none; background: transparent; padding: 7px 16px; border-radius: 100px; font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; color: #686868; cursor: pointer; transition: .15s; white-space: nowrap; }
+        .tab-btn.active { background: var(--clay); color: #fff; }
+        @media (max-width: 640px) { .tab-btn { padding: 7px 11px; font-size: 12px; } }
 
         /* Bố cục 2 cột: form + xem trước */
         .app-main { max-width: 1360px; margin: 0 auto; padding: 28px 24px 56px; display: grid; grid-template-columns: minmax(320px, 440px) minmax(0, 1fr); gap: 28px; align-items: start; }
@@ -129,6 +134,21 @@
         
         .footer { background: var(--paper); padding: 24px 0; width: 100%; box-sizing: border-box; text-align: center; font-style: italic; font-weight: 500; font-size: 18px; line-height: normal; color: var(--text-color); }
 
+        /* PHIẾU NHẬN XÉT KHÓA HỌC - theo thiết kế Figma (chiều cao co giãn theo nội dung) */
+        #capture-area-nx { width: 1280px; background: #fff; color: var(--text-color); font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 20px; display: flex; flex-direction: column; }
+        .nx-infobar { background: #f6f0e8; padding: 12px 158px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 32px; box-sizing: border-box; }
+        .nx-infobar .info-item { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .nx-body { background: var(--paper); padding: 48px 158px; box-sizing: border-box; }
+        .nx-sections { display: flex; flex-direction: column; gap: 48px; }
+        .nx-section { display: flex; flex-direction: column; gap: 8px; }
+        .nx-heading { font-weight: 700; }
+        .nx-list { margin: 0; padding-left: 30px; font-weight: 500; }
+        .nx-list li { line-height: 1.6; }
+        .nx-list.nx-uppercase li { text-transform: uppercase; }
+        .nx-list:empty { display: none; }
+        .nx-divider { height: 1px; background: rgba(93,31,31,0.25); margin: 0 162px; }
+        .nx-footer-section { background: var(--paper); padding: 48px 162px 96px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
+
         /* Chặn iOS tự động tô xanh + gạch chân số điện thoại/số TK trong vùng phiếu */
         #capture-area a,
         #capture-area a[href^="tel:"],
@@ -143,7 +163,11 @@
         @media (max-width: 980px) { .preview-panel { position: static; } }
         .preview-label { display: flex; align-items: center; gap: 8px; font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; color: var(--maroon); }
         .preview-stage { width: 100%; overflow: hidden; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border); background: var(--paper); }
-        .preview-scaler { width: 1280px; height: 720px; transform-origin: top left; }
+        .preview-scaler { width: 1280px; transform-origin: top left; }
+
+        textarea { font-family: 'Montserrat', sans-serif; width: 100%; padding: 11px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); box-sizing: border-box; font-size: 14px; color: var(--ink); background: #fff; resize: vertical; min-height: 76px; line-height: 1.5; transition: border-color .15s, box-shadow .15s; }
+        textarea:focus { outline: none; border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93,31,31,0.10); }
+        .field-hint { font-size: 11px; color: var(--muted); font-weight: 500; margin-top: -3px; }
 
         /* Nút bấm */
         .btn { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; border-radius: 12px; padding: 14px 16px; cursor: pointer; border: none; transition: .15s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
@@ -162,15 +186,20 @@
 <body>
 
 <header class="app-header">
-    <img src="logo.png" alt="Lespace Art">
-    <div class="app-header-text">
-        <div class="brand">Lespace Art</div>
-        <div class="tagline">Tạo phiếu thông báo học phí</div>
+    <div class="app-header-left">
+        <img src="logo.png" alt="Lespace Art">
+        <div class="app-header-text">
+            <div class="tagline" id="app-tagline">Tạo phiếu thông báo học phí</div>
+        </div>
+    </div>
+    <div class="ticket-tabs">
+        <button type="button" class="tab-btn active" id="tab-hocphi" onclick="switchTicket('hocphi')">Phiếu học phí</button>
+        <button type="button" class="tab-btn" id="tab-nhanxet" onclick="switchTicket('nhanxet')">Phiếu nhận xét</button>
     </div>
 </header>
 
 <div class="app-main">
-<div class="form-panel">
+<div class="form-panel" id="panel-hocphi">
 
     <div class="section">
         <div class="section-title">
@@ -291,10 +320,117 @@
 
 </div>
 
+<div class="form-panel" id="panel-nhanxet" style="display:none;">
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6"/></svg>
+            Học sinh
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Tên học sinh</label>
+                <input type="text" id="nx-ten" placeholder="Điền tên học sinh" oninput="this.value = formatName(this.value); updateNxUI()">
+            </div>
+            <div class="field">
+                <label>Môn học</label>
+                <select id="nx-mon" onchange="updateNxUI()">
+                    <option value="" disabled selected>Điền môn học</option>
+                    <option value="Piano">Piano</option><option value="Múa">Múa</option><option value="Vẽ">Vẽ</option>
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <label>Khóa số (VD: I, II, III...)</label>
+            <input type="text" id="nx-khoa" placeholder="I" oninput="updateNxUI()">
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+            Kỳ học
+        </div>
+        <div class="field-row">
+            <div class="field">
+                <label>Kỳ học bắt đầu</label>
+                <input type="date" id="nx-ky-start" onchange="updateNxUI()">
+            </div>
+            <div class="field">
+                <label>Kỳ học kết thúc</label>
+                <input type="date" id="nx-ky-end" onchange="updateNxUI()">
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5C4 4.5 5 4 7 4h5v15c-2 0-3 .3-4 1-1-.7-2-1-4-1V5.5z"/><path d="M20 5.5C20 4.5 19 4 17 4h-5v15c2 0 3 .3 4 1 1-.7 2-1 4-1V5.5z"/></svg>
+            1. Kiến thức hoàn thành
+        </div>
+        <div class="field">
+            <textarea id="nx-kienthuc" placeholder="Trình độ 5&#10;Chồng âm&#10;Nốt kép, nốt đơn, nốt đen..." oninput="updateNxUI()"></textarea>
+            <div class="field-hint">Mỗi dòng là 1 ý, sẽ hiện thành gạch đầu dòng trên phiếu</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L12 3z"/></svg>
+            2. Tác phẩm hoàn thành
+        </div>
+        <div class="field">
+            <textarea id="nx-tphoanthanh" placeholder="Liên khúc: Tôi bắt đầu - Bước chân đầu tiên&#10;Valse ngắn&#10;Hội làng" oninput="updateNxUI()"></textarea>
+            <div class="field-hint">Mỗi dòng là 1 tác phẩm, tự động hiển thị viết hoa trên phiếu</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L12 3z"/></svg>
+            3. Tác phẩm đang học
+        </div>
+        <div class="field">
+            <textarea id="nx-tpdanghoc" placeholder="Minuet in G" oninput="updateNxUI()"></textarea>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4V5z"/></svg>
+            4. Nhận xét của Giáo viên
+        </div>
+        <div class="field">
+            <textarea id="nx-nhanxet" placeholder="Con chịu khó vỡ bài, hoàn thành phần tự luyện...&#10;Tập trung nghe cô giảng..." oninput="updateNxUI()"></textarea>
+            <div class="field-hint">Mỗi dòng là 1 ý</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v18"/><path d="M6 4.5c2-1.2 4-1.2 6 0s4 1.2 6 0v9c-2 1.2-4 1.2-6 0s-4-1.2-6 0z"/></svg>
+            5. Kế hoạch học tập khóa tiếp theo
+        </div>
+        <div class="field">
+            <textarea id="nx-kehoach" placeholder="Vỡ những tác phẩm dài hơn&#10;Tập luyện ngón kỹ thuật (Hanon, Etude)" oninput="updateNxUI()"></textarea>
+            <div class="field-hint">Mỗi dòng là 1 ý</div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-primary" onclick="exportImg()">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            Xuất ảnh phiếu
+        </button>
+        <button class="btn btn-ghost" onclick="resetForm()" style="align-self:center;">Tạo mới (reset)</button>
+    </div>
+
+</div>
+
 <div class="preview-panel">
     <div class="preview-label">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
-        Xem trước phiếu
+        <span id="preview-label-text">Xem trước phiếu</span>
     </div>
     <div class="preview-stage">
     <div class="preview-scaler">
@@ -373,6 +509,52 @@
         </div>
     </div>
     </div>
+
+<div id="capture-area-nx" style="display:none;">
+    <div class="header">
+        <div class="header-inner">
+            <img src="logo.png" class="logo-img">
+            <div class="title-box">
+                <div class="title-main">Nhận xét khóa học</div>
+                <div class="mon-box"><span id="nx-out-mon">---</span> - Khóa <span id="nx-out-khoa">---</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nx-infobar">
+        <div class="info-item"><span>Họ và tên HS</span><span class="colon">:</span><span class="value-bold" id="nx-out-ten">---</span></div>
+        <div class="info-item"><span>Kỳ học</span><span class="colon">:</span><span class="value-bold" id="nx-out-ky">--/--/---- - --/--/----</span></div>
+    </div>
+
+    <div class="nx-body">
+        <div class="nx-sections">
+            <div class="nx-section">
+                <div class="nx-heading">1. Kiến thức hoàn thành:</div>
+                <ul class="nx-list" id="nx-out-kienthuc"></ul>
+            </div>
+            <div class="nx-section">
+                <div class="nx-heading">2. Tác phẩm hoàn thành:</div>
+                <ul class="nx-list nx-uppercase" id="nx-out-tphoanthanh"></ul>
+            </div>
+            <div class="nx-section">
+                <div class="nx-heading">3. Tác phẩm đang học:</div>
+                <ul class="nx-list" id="nx-out-tpdanghoc"></ul>
+            </div>
+            <div class="nx-section">
+                <div class="nx-heading">4. Nhận xét của Giáo viên:</div>
+                <ul class="nx-list" id="nx-out-nhanxet"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="nx-divider"></div>
+
+    <div class="nx-footer-section">
+        <div class="nx-heading">5. Kế hoạch học tập khóa tiếp theo:</div>
+        <ul class="nx-list" id="nx-out-kehoach"></ul>
+    </div>
+</div>
+
 </div>
 </div>
 </div>
@@ -381,21 +563,69 @@
 <script>
     let holidays = [];
     let isNewStudent = false;
+    let activeTicket = 'hocphi';
 
-    // Co giãn khung xem trước (1280x720) vừa khít mọi kích thước màn hình.
-    // Scale được đặt trên .preview-scaler (KHÔNG phải #capture-area), nên không
-    // ảnh hưởng tới exportImg() - ảnh xuất ra luôn giữ đúng độ phân giải gốc 1280x720.
+    // Co giãn khung xem trước vừa khít mọi kích thước màn hình.
+    // Đo chiều cao THẬT của phiếu đang hiển thị (scaler.offsetHeight) thay vì số cố định,
+    // vì phiếu Nhận xét có chiều cao co giãn theo lượng nội dung giáo viên nhập.
+    // Scale được đặt trên .preview-scaler (KHÔNG phải #capture-area / #capture-area-nx),
+    // nên không ảnh hưởng tới exportImg() - ảnh xuất ra luôn giữ đúng độ phân giải gốc.
     function updatePreviewScale() {
         const stage = document.querySelector('.preview-stage');
         const scaler = document.querySelector('.preview-scaler');
         if (!stage || !scaler) return;
+        const naturalHeight = scaler.offsetHeight;
         const scale = Math.min(1, stage.clientWidth / 1280);
         scaler.style.transform = `scale(${scale})`;
-        stage.style.height = (720 * scale) + 'px';
+        stage.style.height = (naturalHeight * scale) + 'px';
     }
     window.addEventListener('resize', updatePreviewScale);
     window.addEventListener('orientationchange', updatePreviewScale);
     updatePreviewScale();
+
+    // Chuyển đổi giữa Phiếu học phí và Phiếu nhận xét
+    function switchTicket(name) {
+        activeTicket = name;
+        const isHP = name === 'hocphi';
+        document.getElementById('tab-hocphi').classList.toggle('active', isHP);
+        document.getElementById('tab-nhanxet').classList.toggle('active', !isHP);
+        document.getElementById('panel-hocphi').style.display = isHP ? 'flex' : 'none';
+        document.getElementById('panel-nhanxet').style.display = isHP ? 'none' : 'flex';
+        document.getElementById('capture-area').style.display = isHP ? 'flex' : 'none';
+        document.getElementById('capture-area-nx').style.display = isHP ? 'none' : 'flex';
+        document.getElementById('app-tagline').innerText = isHP ? 'Tạo phiếu thông báo học phí' : 'Tạo phiếu nhận xét khóa học';
+        document.getElementById('preview-label-text').innerText = isHP ? 'Xem trước phiếu' : 'Xem trước phiếu nhận xét';
+        updatePreviewScale();
+    }
+
+    // Chuyển văn bản nhiều dòng (mỗi dòng 1 ý) thành danh sách gạch đầu dòng <li>
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function linesToListHTML(text) {
+        return text.split('\n').map(l => l.trim()).filter(l => l.length > 0).map(l => `<li>${escapeHtml(l)}</li>`).join('');
+    }
+
+    // Cập nhật phiếu Nhận xét khóa học theo dữ liệu nhập
+    function updateNxUI() {
+        document.getElementById('nx-out-ten').innerText = document.getElementById('nx-ten').value || '---';
+        document.getElementById('nx-out-mon').innerText = document.getElementById('nx-mon').value || '---';
+        document.getElementById('nx-out-khoa').innerText = document.getElementById('nx-khoa').value || '---';
+
+        const ks = document.getElementById('nx-ky-start').value;
+        const ke = document.getElementById('nx-ky-end').value;
+        document.getElementById('nx-out-ky').innerText = (ks && ke)
+            ? `${new Date(ks).toLocaleDateString('vi-VN')} - ${new Date(ke).toLocaleDateString('vi-VN')}`
+            : '--/--/---- - --/--/----';
+
+        document.getElementById('nx-out-kienthuc').innerHTML = linesToListHTML(document.getElementById('nx-kienthuc').value);
+        document.getElementById('nx-out-tphoanthanh').innerHTML = linesToListHTML(document.getElementById('nx-tphoanthanh').value);
+        document.getElementById('nx-out-tpdanghoc').innerHTML = linesToListHTML(document.getElementById('nx-tpdanghoc').value);
+        document.getElementById('nx-out-nhanxet').innerHTML = linesToListHTML(document.getElementById('nx-nhanxet').value);
+        document.getElementById('nx-out-kehoach').innerHTML = linesToListHTML(document.getElementById('nx-kehoach').value);
+
+        updatePreviewScale();
+    }
 
     // Tự động viết hoa chữ cái đầu và sau dấu cách
     function formatName(str) {
@@ -557,19 +787,10 @@
         return isIPhoneIPad || isIPadOS;
     }
 
-    function exportImg() {
-        const ten = document.getElementById('in-ten').value, mon = document.getElementById('in-mon').value,
-              phi = document.getElementById('in-phi').value, start = document.getElementById('in-start').value;
-        
-        if (!ten || !mon || !phi || !start) { 
-            alert("Vui lòng điền đủ thông tin bắt buộc!"); 
-            return; 
-        }
-
-        const area = document.getElementById('capture-area');
+    // Chụp 1 vùng phiếu (area) và lưu ảnh - dùng chung cho cả 2 loại phiếu
+    function captureAndSave(area, fileName) {
         const oldT = area.style.transform;
-        const fileName = `${mon}_${ten}.png`;
-        
+
         document.fonts.ready.then(() => {
             area.style.transform = "none";
             html2canvas(area, { 
@@ -606,6 +827,27 @@
                 }, 'image/png');
             });
         });
+    }
+
+    function exportImg() {
+        if (activeTicket === 'hocphi') {
+            const ten = document.getElementById('in-ten').value, mon = document.getElementById('in-mon').value,
+                  phi = document.getElementById('in-phi').value, start = document.getElementById('in-start').value;
+
+            if (!ten || !mon || !phi || !start) {
+                alert("Vui lòng điền đủ thông tin bắt buộc!");
+                return;
+            }
+            captureAndSave(document.getElementById('capture-area'), `${mon}_${ten}.png`);
+        } else {
+            const ten = document.getElementById('nx-ten').value, mon = document.getElementById('nx-mon').value;
+
+            if (!ten || !mon) {
+                alert("Vui lòng điền đủ thông tin bắt buộc (Tên học sinh, Môn học)!");
+                return;
+            }
+            captureAndSave(document.getElementById('capture-area-nx'), `NhanXet_${mon}_${ten}.png`);
+        }
     }
 </script>
 </body>
