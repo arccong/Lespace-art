@@ -77,7 +77,9 @@
         .day-item label:has(input:checked) { background: var(--maroon); border-color: var(--maroon); color: #fff; }
         .ca-input { width: 46px !important; padding: 5px 4px !important; text-align: center; font-size: 12px !important; font-weight: 700; border-radius: 8px !important; }
         .ca-hint { display: block; font-weight: 400; font-size: 11px; color: #888; margin-top: 2px; }
-        #in-buoi { width: 64px !important; margin-left: auto; font-weight: 700; text-align: center; align-self: center; }
+        #in-buoi { width: 90px !important; font-weight: 700; text-align: center; font-size: 16px !important; }
+        .total-buoi-row { flex-direction: row; align-items: center; justify-content: space-between; background: var(--sand); padding: 10px 14px; border-radius: var(--radius-sm); }
+        .total-buoi-row label { margin-bottom: 0; }
         .holiday-tag { background: #fff; border: 1.5px solid var(--clay); color: var(--clay); padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
         /* VÙNG PHIẾU CHÍNH - theo thiết kế Figma */
@@ -237,7 +239,7 @@
                 <input type="date" id="in-prev-end" onchange="validateDates()">
             </div>
             <div class="field">
-                <label>Khóa sau bắt đầu</label>
+                <label id="label-in-start">Khóa sau bắt đầu</label>
                 <input type="date" id="in-start" onchange="initSchedule()">
             </div>
         </div>
@@ -282,6 +284,9 @@
                 <label><input type="checkbox" class="dow" value="0" onchange="handleDowChange()"> CN</label>
                 <input type="number" class="ca-input" data-day="0" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
             </div>
+        </div>
+        <div class="field total-buoi-row">
+            <label>Tổng số buổi</label>
             <input type="number" id="in-buoi" value="24" oninput="calcDate()">
         </div>
     </div>
@@ -810,6 +815,7 @@
         document.getElementById('in-prev-note').disabled = true;
         document.getElementById('row-prev').style.display = 'none';
         document.getElementById('label-range').innerText = 'Khóa học bắt đầu';
+        document.getElementById('label-in-start').innerText = 'Khóa học bắt đầu';
         document.getElementById('btn-new').style.opacity = '0.6';
         document.getElementById('btn-new').innerText = 'ĐANG Ở CHẾ ĐỘ HỌC SINH MỚI';
     }
