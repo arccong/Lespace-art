@@ -61,45 +61,60 @@
         .icon { width: 18px; height: 18px; flex-shrink: 0; }
         .section-hint { font-size: 11.5px; color: var(--muted); font-weight: 500; margin-top: -6px; line-height: 1.4; }
 
-        .field-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-        .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; min-width: 0; }
+        .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; max-width: 100%; }
 
         .input-group { margin-bottom: 12px; }
         label, .field label { display: block; font-weight: 600; font-size: 12px; margin-bottom: 0; color: var(--ink); letter-spacing: .01em; }
         input, select { font-family: 'Montserrat', sans-serif; width: 100%; padding: 11px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); box-sizing: border-box; font-size: 14px; color: var(--ink); background: #fff; transition: border-color .15s, box-shadow .15s; }
         input:focus, select:focus { outline: none; border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93,31,31,0.10); }
 
-        /* iPhone/iPad: native date inputs có intrinsic width lớn hơn grid cell nếu không ép min-width:0. */
-        .field-row > .field { min-width: 0; width: 100%; }
+        /* Các date input của Safari có intrinsic width riêng. Khóa chúng trong từng grid track. */
+        .field-row > .field { min-width: 0; max-width: 100%; width: 100%; overflow: hidden; }
         .field-row > .field > input,
-        .field-row > .field > select { min-width: 0; max-width: 100%; width: 100%; }
-        input[type="date"] { min-width: 0; max-width: 100%; }
+        .field-row > .field > select { min-width: 0; max-width: 100%; width: 100%; inline-size: 100%; }
+        .field-row input[type="date"] {
+            width: 0;
+            min-width: 100%;
+            max-width: 100%;
+            inline-size: 100%;
+            min-inline-size: 0;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+        }
 
         @media (max-width: 640px) {
-            .field-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; width: 100%; min-width: 0; }
-            .field-row .field { min-width: 0; width: 100%; }
+            .field-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; min-width: 0; }
+            .field-row .field { min-width: 0; max-width: 100%; width: 100%; }
             .field-row input[type="date"] {
-                width: 100% !important;
-                min-width: 0 !important;
+                width: 0 !important;
+                min-width: 100% !important;
                 max-width: 100% !important;
-                padding: 11px 8px;
+                padding: 11px 6px;
                 font-size: 16px;
                 letter-spacing: -0.2px;
             }
         }
 
         @supports (-webkit-touch-callout: none) {
-            .field-row,
-            .field-row .field,
+            .field-row { grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; }
+            .field-row .field { min-width: 0; max-width: 100%; overflow: hidden; }
             .field-row input,
             .field-row select { min-width: 0; max-width: 100%; }
             .field-row input[type="date"] {
-                width: 100% !important;
-                min-width: 0 !important;
+                width: 0 !important;
+                min-width: 100% !important;
                 max-width: 100% !important;
+                inline-size: 100% !important;
+                min-inline-size: 0 !important;
                 -webkit-box-sizing: border-box;
                 box-sizing: border-box;
+                -webkit-appearance: none;
+                appearance: none;
+                padding-right: 6px;
             }
+            .field-row input[type="date"]::-webkit-date-and-time-value { min-width: 0; text-align: left; }
+            .field-row input[type="date"]::-webkit-calendar-picker-indicator { margin: 0; }
         }
         input:disabled { background: var(--sand); color: var(--muted); cursor: not-allowed; }
         input::placeholder { color: #C2AF9B; }
@@ -170,10 +185,12 @@
         .qr-side { width: 270px; flex-shrink: 0; }
         .qr-img { width: 270px; height: 293px; border-radius: 10px; object-fit: cover; }
         
-        .footer { background: var(--paper); padding: 24px 0; width: 100%; box-sizing: border-box; text-align: center; font-style: italic; font-weight: 500; font-size: 18px; line-height: normal; color: var(--text-color); }
+        .footer { background: var(--paper); padding: 24px 0; width: 100%; box-sizing: border-box; text-align: center; font-style: italic; font-weight: 500; font-size: 18px; line-height: 1.35; color: var(--text-color); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
         /* PHIẾU NHẬN XÉT KHÓA HỌC - theo thiết kế Figma (chiều cao co giãn theo nội dung) */
         #capture-area-nx { width: 1280px; background: #fff; color: var(--text-color); font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 20px; display: flex; flex-direction: column; }
+        /* Chỉ áp dụng trong lúc export: để phần cuối phiếu nhận xét có khoảng thở đồng đều. */
+        #capture-area-nx.is-exporting { padding-bottom: 72px; background: var(--paper); }
         .nx-infobar { background: #f6f0e8; padding: 12px 158px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 32px; box-sizing: border-box; }
         .nx-infobar .info-item { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
         .nx-body { background: var(--paper); padding: 48px 158px; box-sizing: border-box; }
@@ -194,6 +211,19 @@
             color: inherit !important;
             text-decoration: none !important;
             font: inherit !important;
+        }
+
+        /* Ngăn Safari/iOS tự tăng chữ trong các vùng phiếu 1280px đang được scale preview. */
+        #capture-area, #capture-area *, #capture-area-nx, #capture-area-nx * {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        @supports (-webkit-touch-callout: none) {
+            #capture-area .footer {
+                font-size: 18px !important;
+                line-height: 1.35 !important;
+                transform: translateZ(0);
+            }
         }
 
         /* Khung xem trước phiếu (responsive, scale bằng JS thay vì hack margin âm) */
@@ -1176,6 +1206,7 @@
         const oldScalerT = scaler ? scaler.style.transform : '';
         const oldAreaDisplay = area.style.display;
         const oldScalerDisplay = scaler ? scaler.style.display : '';
+        const isReviewTicket = area.id === 'capture-area-nx';
 
         try {
             // Chờ font và layout ổn định trước khi đo.
@@ -1185,6 +1216,7 @@
             await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
             area.style.transform = "none";
+            if (isReviewTicket) area.classList.add('is-exporting');
             if (scaler) {
                 scaler.style.transform = "none";
                 scaler.style.display = "block";
@@ -1215,6 +1247,7 @@
             const canvas = await html2canvas(area, options);
 
             // Khôi phục preview trước khi mở Share Sheet trên iOS.
+            if (isReviewTicket) area.classList.remove('is-exporting');
             area.style.transform = oldAreaT;
             area.style.display = oldAreaDisplay;
             if (scaler) {
@@ -1248,6 +1281,7 @@
 
         } catch (err) {
             // Luôn khôi phục UI nếu html2canvas gặp lỗi.
+            if (isReviewTicket) area.classList.remove('is-exporting');
             area.style.transform = oldAreaT;
             area.style.display = oldAreaDisplay;
             if (scaler) {
