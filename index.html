@@ -82,13 +82,15 @@
         input:disabled { background: var(--sand); color: var(--muted); cursor: not-allowed; }
         input::placeholder { color: #C2AF9B; }
 
-        .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; background: var(--sand); padding: 12px; border-radius: var(--radius-sm); align-items: flex-start; }
-        .day-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .day-item label { margin-bottom: 0; font-weight: 600; font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 4px; white-space: nowrap; padding: 9px 11px; border: 1.5px solid var(--border); border-radius: 10px; background: #fff; cursor: pointer; transition: .15s; user-select: none; }
-        .day-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--maroon); }
-        .day-item label:has(input:checked) { background: var(--maroon); border-color: var(--maroon); color: #fff; }
-        .ca-input { width: 46px !important; padding: 5px 4px !important; text-align: center; font-size: 12px !important; font-weight: 700; border-radius: 8px !important; }
-        .ca-hint { display: block; font-weight: 400; font-size: 11px; color: #888; margin-top: 2px; }
+        .schedule-slots { display: flex; flex-direction: column; gap: 8px; }
+        .schedule-slot-row { display: flex; align-items: center; gap: 6px; background: var(--sand); padding: 8px 10px; border-radius: var(--radius-sm); }
+        .slot-dow { flex: 0 0 92px; padding: 8px 6px !important; font-size: 12.5px !important; }
+        .slot-start, .slot-end { flex: 1; min-width: 0; padding: 8px 6px !important; font-size: 12.5px !important; }
+        .slot-sep { color: var(--muted); flex-shrink: 0; font-size: 12px; }
+        .slot-remove { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; border: none; background: transparent; color: var(--muted); cursor: pointer; font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: .15s; }
+        .slot-remove:hover { background: rgba(93,31,31,0.1); color: var(--maroon); }
+        .btn-add-slot { align-self: flex-start; padding: 9px 14px; font-size: 12.5px; }
+        .btn-add-slot .icon { width: 15px; height: 15px; }
         #in-buoi { width: 90px !important; font-weight: 700; text-align: center; font-size: 16px !important; }
         .total-buoi-row { flex-direction: row; align-items: center; justify-content: space-between; background: var(--sand); padding: 10px 14px; border-radius: var(--radius-sm); }
         .total-buoi-row label { margin-bottom: 0; }
@@ -141,6 +143,8 @@
         .colon { flex-shrink: 0; }
         .value { font-weight: 500; flex: 1 0 0; min-width: 0; }
         .value-bold { font-weight: 700; }
+        .schedule-day { font-weight: 700; }
+        .schedule-time { font-weight: 500; }
         .value-uppercase { text-transform: uppercase; font-weight: 500; line-height: 1.4; }
 
         .note { font-style: italic; font-weight: 500; font-size: 18px; margin-top: 2px; }
@@ -267,37 +271,15 @@
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
             Lịch học &amp; số buổi
         </div>
-        <div class="section-hint">1 ca = 1 giờ học · chọn 1 ngày mặc định 2 ca · chọn 2 ngày mặc định 1 ca/ngày (có thể sửa)</div>
-        <div class="checkbox-group">
-            <div class="day-item">
-                <label><input type="checkbox" class="dow" value="1" onchange="handleDowChange()"> T2</label>
-                <input type="number" class="ca-input" data-day="1" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
-            </div>
-            <div class="day-item">
-                <label><input type="checkbox" class="dow" value="2" onchange="handleDowChange()"> T3</label>
-                <input type="number" class="ca-input" data-day="2" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
-            </div>
-            <div class="day-item">
-                <label><input type="checkbox" class="dow" value="3" onchange="handleDowChange()"> T4</label>
-                <input type="number" class="ca-input" data-day="3" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
-            </div>
-            <div class="day-item">
-                <label><input type="checkbox" class="dow" value="4" onchange="handleDowChange()"> T5</label>
-                <input type="number" class="ca-input" data-day="4" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
-            </div>
-            <div class="day-item">
-                <label><input type="checkbox" class="dow" value="5" onchange="handleDowChange()"> T6</label>
-                <input type="number" class="ca-input" data-day="5" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
-            </div>
-            <div class="day-item">
-                <label><input type="checkbox" class="dow" value="6" onchange="handleDowChange()"> T7</label>
-                <input type="number" class="ca-input" data-day="6" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
-            </div>
-            <div class="day-item">
-                <label><input type="checkbox" class="dow" value="0" onchange="handleDowChange()"> CN</label>
-                <input type="number" class="ca-input" data-day="0" min="1" max="4" value="1" style="display:none;" onchange="onCaManualChange(this)">
-            </div>
-        </div>
+        <div class="section-hint">Thêm từng khung giờ học trong tuần. Số buổi mỗi khung tự tính theo thời lượng (1 giờ = 1 buổi).</div>
+
+        <div id="schedule-slots" class="schedule-slots"></div>
+
+        <button type="button" class="btn btn-secondary btn-add-slot" onclick="addScheduleSlot()">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Thêm khung giờ học
+        </button>
+
         <div class="field total-buoi-row">
             <label>Tổng số buổi</label>
             <input type="number" id="in-buoi" value="24" oninput="calcDate()">
@@ -523,9 +505,9 @@
                     <div class="value value-bold" id="out-range">Từ --/--/---- đến --/--/----</div>
                 </div>
 
-                <div class="row">
+                <div class="row align-start">
                     <div class="label-wrap"><span>Lịch học</span><span class="colon">:</span></div>
-                    <div class="value value-bold" id="out-schedule">---</div>
+                    <div class="value value-bold" id="out-schedule" style="line-height:1.5;">---</div>
                 </div>
 
                 <div class="row">
@@ -561,8 +543,7 @@
 
         <div class="footer">
             Phụ huynh vui lòng hoàn tất học phí trước ngày nhập học.<br>
-            Phụ huynh chụp lại màn hình ck và gửi lại giáo viên quản lý để xác nhận.<br>
-            Trân trọng!
+            Phụ huynh chụp lại màn hình ck và gửi lại giáo viên quản lý để xác nhận. Trân trọng!
         </div>
     </div>
     </div>
@@ -803,77 +784,134 @@
     }
 
     function initSchedule() {
-        validateDates(); const s = document.getElementById('in-start').value;
-        if (!s) return; const d = new Date(s).getDay();
-        document.querySelectorAll('.dow').forEach(el => el.checked = (parseInt(el.value) === d));
-        handleDowChange();
+        validateDates();
+        const s = document.getElementById('in-start').value;
+        if (!s) return;
+        // Nếu chưa có khung giờ nào, tự thêm 1 khung theo đúng Thứ của ngày bắt đầu để gợi ý.
+        // Nếu đã có sẵn khung giờ (người dùng tự nhập), không tự ý thêm/sửa để tránh mất dữ liệu.
+        if (document.querySelectorAll('.schedule-slot-row').length === 0) {
+            addScheduleSlot(new Date(s).getDay());
+        } else {
+            refreshSchedule();
+        }
     }
 
-    // Ẩn/hiện ô nhập số ca theo ngày được chọn, tự set mặc định số ca theo quy tắc,
-    // và giữ nguyên nếu người dùng đã tự sửa tay (đánh dấu qua dataset.custom)
     // Nhãn tiếng Việt và thứ tự hiển thị Thứ 2 -> Chủ Nhật
     const dowLabels = {1:'Thứ 2', 2:'Thứ 3', 3:'Thứ 4', 4:'Thứ 5', 5:'Thứ 6', 6:'Thứ 7', 0:'Chủ Nhật'};
     const dowOrder = [1,2,3,4,5,6,0];
+    let slotIdCounter = 0;
 
-    function updateScheduleText() {
-        const checked = Array.from(document.querySelectorAll('.dow:checked')).map(el => parseInt(el.value));
-        const labels = dowOrder.filter(d => checked.includes(d)).map(d => dowLabels[d]);
-        document.getElementById('out-schedule').innerText = labels.length ? labels.join(' - ') : '---';
+    // Thêm 1 dòng "khung giờ học" (Thứ + giờ bắt đầu + giờ kết thúc).
+    // Giờ bắt đầu mặc định 17:00; giờ kết thúc do applyDefaultEndTimes() tự tính.
+    function addScheduleSlot(dow, start) {
+        const row = document.createElement('div');
+        row.className = 'schedule-slot-row';
+        row.dataset.slotId = 'slot-' + (slotIdCounter++);
+        row.innerHTML = `
+            <select class="slot-dow" onchange="refreshSchedule()">
+                ${dowOrder.map(d => `<option value="${d}">${dowLabels[d]}</option>`).join('')}
+            </select>
+            <input type="time" class="slot-start" value="" onchange="refreshSchedule()">
+            <span class="slot-sep">–</span>
+            <input type="time" class="slot-end" value="" data-custom="false" onchange="onSlotEndChange(this)">
+            <button type="button" class="slot-remove" onclick="removeScheduleSlot(this)" title="Xóa khung giờ này">×</button>
+        `;
+        document.getElementById('schedule-slots').appendChild(row);
+        if (dow !== undefined && dow !== null) row.querySelector('.slot-dow').value = dow;
+        row.querySelector('.slot-start').value = start || '17:00';
+        refreshSchedule();
     }
 
-    function handleDowChange() {
-        const checkedDays = Array.from(document.querySelectorAll('.dow:checked')).map(el => el.value);
+    function removeScheduleSlot(btn) {
+        btn.closest('.schedule-slot-row').remove();
+        refreshSchedule();
+    }
 
-        document.querySelectorAll('.ca-input').forEach(inp => {
-            const isChecked = checkedDays.includes(inp.dataset.day);
-            inp.style.display = isChecked ? 'inline-block' : 'none';
-            if (!isChecked) inp.dataset.custom = ''; // bỏ chọn ngày -> xóa cờ tùy chỉnh, lần chọn lại sẽ về mặc định
+    // Người dùng tự sửa giờ kết thúc tay -> đánh dấu để không bị auto ghi đè nữa
+    function onSlotEndChange(input) {
+        input.dataset.custom = 'true';
+        refreshSchedule();
+    }
+
+    // Chỉ 1 khung giờ (1 ngày học) -> mặc định kết thúc sau 2 giờ (VD 17:00 -> 19:00).
+    // Từ 2 khung giờ (2 ngày học) trở lên -> mặc định mỗi khung kết thúc sau 1 giờ (VD 17:00 -> 18:00).
+    // Chỉ áp dụng cho khung nào người dùng CHƯA tự sửa giờ kết thúc tay.
+    function applyDefaultEndTimes() {
+        const rows = document.querySelectorAll('.schedule-slot-row');
+        const offsetHours = rows.length <= 1 ? 2 : 1;
+        rows.forEach(row => {
+            const endInput = row.querySelector('.slot-end');
+            if (endInput.dataset.custom === 'true') return;
+            const startInput = row.querySelector('.slot-start');
+            endInput.value = computeDefaultEnd(startInput.value, offsetHours);
         });
+    }
 
-        if (checkedDays.length === 1) {
-            setCaDefault(checkedDays[0], 2);
-        } else if (checkedDays.length === 2) {
-            checkedDays.forEach(d => setCaDefault(d, 1));
-        }
+    function computeDefaultEnd(startStr, offsetHours) {
+        if (!startStr) return '';
+        const [h, m] = startStr.split(':').map(Number);
+        const endH = Math.min(23, h + offsetHours);
+        return String(endH).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+    }
 
+    // Đọc toàn bộ danh sách khung giờ hiện có, tự tính số buổi mỗi khung theo thời lượng (1 giờ = 1 buổi)
+    function getScheduleSlots() {
+        return Array.from(document.querySelectorAll('.schedule-slot-row')).map(row => {
+            const dow = parseInt(row.querySelector('.slot-dow').value);
+            const start = row.querySelector('.slot-start').value;
+            const end = row.querySelector('.slot-end').value;
+            let hours = 0;
+            if (start && end) {
+                const [sh, sm] = start.split(':').map(Number);
+                const [eh, em] = end.split(':').map(Number);
+                hours = (eh * 60 + em - (sh * 60 + sm)) / 60;
+                if (hours < 0) hours = 0; // giờ kết thúc trước giờ bắt đầu -> bỏ qua, không tính buổi
+            }
+            return { dow, start, end, hours };
+        });
+    }
+
+    function refreshSchedule() {
+        applyDefaultEndTimes();
         updateScheduleText();
         calcDate();
     }
 
-    function setCaDefault(day, value) {
-        const inp = document.querySelector(`.ca-input[data-day="${day}"]`);
-        if (inp && inp.dataset.custom !== 'true') inp.value = value;
-    }
-
-    function onCaManualChange(input) {
-        input.dataset.custom = 'true';
-        calcDate();
+    // Chỉ 1 dòng -> hiện gọn 1 dòng. Từ 2 dòng trở lên -> mỗi ngày học xuống 1 dòng riêng trên phiếu.
+    function updateScheduleText() {
+        const slots = getScheduleSlots().filter(s => s.hours > 0 && s.start && s.end);
+        const out = document.getElementById('out-schedule');
+        if (slots.length === 0) {
+            out.innerText = '---';
+            return;
+        }
+        const sorted = slots.slice().sort((a, b) => dowOrder.indexOf(a.dow) - dowOrder.indexOf(b.dow));
+        const lines = sorted.map(s => `<span class="schedule-day">${dowLabels[s.dow]}</span> <span class="schedule-time">(${s.start} - ${s.end})</span>`);
+        out.innerHTML = lines.join('<br>');
     }
 
     function calcDate() {
-        const sVal = document.getElementById('in-start').value, num = parseInt(document.getElementById('in-buoi').value),
-              dowCheckboxes = Array.from(document.querySelectorAll('.dow:checked'));
+        const sVal = document.getElementById('in-start').value, num = parseInt(document.getElementById('in-buoi').value);
+        const slots = getScheduleSlots().filter(s => s.hours > 0);
 
-        // Map: thứ trong tuần (0-6) -> số ca/buổi của ngày đó (mỗi ca = 1 buổi)
+        // Map: thứ trong tuần (0-6) -> tổng số buổi/tuần của ngày đó (cộng dồn nếu có nhiều khung giờ cùng 1 Thứ)
         const caMap = {};
-        dowCheckboxes.forEach(cb => {
-            const caInput = document.querySelector(`.ca-input[data-day="${cb.value}"]`);
-            caMap[cb.value] = caInput ? (parseInt(caInput.value) || 1) : 1;
-        });
+        slots.forEach(s => { caMap[s.dow] = (caMap[s.dow] || 0) + s.hours; });
         const dows = Object.keys(caMap).map(Number);
 
         // Cập nhật số buổi hiển thị trên phiếu ngay lập tức
         document.getElementById('out-buoi-display').innerText = num || "0";
 
         if (!sVal || !num || dows.length === 0) return;
-        let count = 0, temp = new Date(sVal), end = new Date(sVal);
-        while (count < num) {
+        let count = 0, temp = new Date(sVal), end = new Date(sVal), guard = 0;
+        while (count < num && guard < 3650) {
             const dayOfWeek = temp.getDay();
             if (dows.includes(dayOfWeek) && !holidays.includes(temp.toISOString().split('T')[0])) {
                 end = new Date(temp);
                 count += caMap[dayOfWeek];
             }
             if (count < num) temp.setDate(temp.getDate() + 1);
+            guard++;
         }
         document.getElementById('out-range').innerText = `Từ ${new Date(sVal).toLocaleDateString('vi-VN')} - đến ${end.toLocaleDateString('vi-VN')}`;
     }
@@ -983,13 +1021,12 @@
         document.getElementById('in-phi').value = '';
         document.getElementById('in-buoi').value = 24;
 
-        document.querySelectorAll('.dow').forEach(cb => cb.checked = false);
-        document.querySelectorAll('.ca-input').forEach(inp => { inp.value = 1; inp.dataset.custom = ''; });
+        document.getElementById('schedule-slots').innerHTML = '';
 
         holidays = [];
         renderHolidays();
 
-        handleDowChange();
+        refreshSchedule();
         updateUI();
     }
 
