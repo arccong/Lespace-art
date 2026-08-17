@@ -154,6 +154,16 @@
         
         .footer { background: var(--paper); padding: 24px 0; width: 100%; box-sizing: border-box; text-align: center; font-style: italic; font-weight: 500; font-size: 18px; line-height: normal; color: var(--text-color); }
 
+        /* PHIẾU LỊCH HỌC NHỎ - xuất kèm phiếu học phí thành file riêng */
+        #capture-area-schedule { width: 640px; margin: 40px auto 0; background: var(--paper); border-radius: 24px; padding: 24px 28px; box-sizing: border-box; display: flex; align-items: center; gap: 22px; font-family: 'Montserrat', sans-serif; color: var(--text-color); box-shadow: var(--shadow-md); border: 1px solid var(--border); }
+        .sc-logo { width: 76px; height: 76px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
+        .sc-divider { width: 1px; align-self: stretch; background: rgba(93,31,31,0.25); flex-shrink: 0; }
+        .sc-info { display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 0; }
+        .sc-row { display: flex; align-items: flex-start; gap: 10px; font-size: 19px; }
+        .sc-label { flex: 0 0 96px; font-weight: 500; }
+        .sc-colon { flex-shrink: 0; }
+        .sc-value { font-weight: 500; flex: 1; line-height: 1.5; min-width: 0; }
+
         /* PHIẾU NHẬN XÉT KHÓA HỌC - theo thiết kế Figma (chiều cao co giãn theo nội dung) */
         #capture-area-nx { width: 1280px; background: #fff; color: var(--text-color); font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 20px; display: flex; flex-direction: column; }
         .nx-infobar { background: #f6f0e8; padding: 12px 158px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 32px; box-sizing: border-box; }
@@ -182,7 +192,7 @@
         .preview-panel { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 78px; min-width: 0; }
         @media (max-width: 980px) { .preview-panel { position: static; } }
         .preview-label { display: flex; align-items: center; gap: 8px; font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; color: var(--maroon); }
-        .preview-stage { width: 100%; overflow: hidden; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border); background: var(--paper); }
+        .preview-stage { width: 100%; overflow: hidden; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border); background: var(--cream); }
         .preview-scaler { width: 1280px; transform-origin: top left; }
 
         textarea { font-family: 'Montserrat', sans-serif; width: 100%; padding: 11px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm) var(--radius-sm) 0 0; box-sizing: border-box; font-size: 14px; color: var(--ink); background: #fff; resize: none; min-height: 76px; line-height: 1.5; transition: border-color .15s, box-shadow .15s; display: block; }
@@ -548,6 +558,25 @@
     </div>
     </div>
 
+<div id="capture-area-schedule" style="display:none;">
+    <img src="icon-512.png" class="sc-logo">
+    <div class="sc-divider"></div>
+    <div class="sc-info">
+        <div class="sc-row">
+            <span class="sc-label">Học sinh</span><span class="sc-colon">:</span>
+            <span class="sc-value" id="sched-out-ten">---</span>
+        </div>
+        <div class="sc-row">
+            <span class="sc-label">Lớp</span><span class="sc-colon">:</span>
+            <span class="sc-value" id="sched-out-mon">---</span>
+        </div>
+        <div class="sc-row">
+            <span class="sc-label">Lịch học</span><span class="sc-colon">:</span>
+            <span class="sc-value" id="sched-out-schedule">---</span>
+        </div>
+    </div>
+</div>
+
 <div id="capture-area-nx" style="display:none;">
     <div class="header">
         <div class="header-inner">
@@ -673,6 +702,7 @@
         document.getElementById('panel-hocphi').style.display = isHP ? 'flex' : 'none';
         document.getElementById('panel-nhanxet').style.display = isHP ? 'none' : 'flex';
         document.getElementById('capture-area').style.display = isHP ? 'flex' : 'none';
+        updateScheduleCardVisibility();
         document.getElementById('capture-area-nx').style.display = isHP ? 'none' : 'flex';
         document.getElementById('app-tagline').innerText = isHP ? 'Tạo phiếu thông báo học phí' : 'Tạo phiếu nhận xét khóa học';
         document.getElementById('preview-label-text').innerText = isHP ? 'Xem trước phiếu' : 'Xem trước phiếu nhận xét';
@@ -883,11 +913,13 @@
         const out = document.getElementById('out-schedule');
         if (slots.length === 0) {
             out.innerText = '---';
+            document.getElementById('sched-out-schedule').innerText = '---';
             return;
         }
         const sorted = slots.slice().sort((a, b) => dowOrder.indexOf(a.dow) - dowOrder.indexOf(b.dow));
         const lines = sorted.map(s => `<span class="schedule-day">${dowLabels[s.dow]}</span> <span class="schedule-time">(${s.start} - ${s.end})</span>`);
         out.innerHTML = lines.join('<br>');
+        document.getElementById('sched-out-schedule').innerHTML = lines.join('<br>');
     }
 
     function calcDate() {
@@ -918,12 +950,21 @@
 
     function updateUI() {
         document.getElementById('out-ten').innerText = document.getElementById('in-ten').value || "---";
+        document.getElementById('sched-out-ten').innerText = document.getElementById('in-ten').value || "---";
         document.getElementById('out-mon').innerText = document.getElementById('in-mon').value || "---";
+        document.getElementById('sched-out-mon').innerText = document.getElementById('in-mon').value || "---";
         document.getElementById('out-phi-display').innerText = document.getElementById('in-phi').value || "0";
         const p = document.getElementById('in-prev-end').value;
         document.getElementById('out-prev').innerText = p ? `Kết thúc khóa ngày ${new Date(p).toLocaleDateString('vi-VN')}` : "Kết thúc khóa ngày --/--/----";
         const note = document.getElementById('in-prev-note').value.trim();
         document.getElementById('out-prev-note').innerText = note ? `(${note})` : "";
+    }
+
+    // Phiếu lịch học nhỏ chỉ áp dụng cho học sinh mới, và chỉ khi đang ở tab Phiếu học phí
+    function updateScheduleCardVisibility() {
+        const show = activeTicket === 'hocphi' && isNewStudent;
+        document.getElementById('capture-area-schedule').style.display = show ? 'flex' : 'none';
+        updatePreviewScale();
     }
 
     function toggleNewStudentMode() {
@@ -951,6 +992,7 @@
             btn.classList.remove('active');
             label.innerText = 'Học sinh mới';
         }
+        updateScheduleCardVisibility();
         updateUI();
     }
 
@@ -1057,8 +1099,8 @@
         return isIPhoneIPad || isIPadOS;
     }
 
-    // Chụp 1 vùng phiếu (area) và lưu ảnh - dùng chung cho cả 2 loại phiếu
-    function captureAndSave(area, fileName) {
+    // Chụp 1 vùng phiếu, trả về blob ảnh PNG - không tự tải/chia sẻ (dùng chung cho các hàm bên dưới)
+    async function captureArea(area) {
         // Phải reset CẢ transform của khung cha (.preview-scaler) lẫn của area,
         // vì html2canvas render lỗi chữ (đè/lệch chữ) khi phần tử cha đang có transform:scale.
         // Trên iOS còn phải bỏ luôn overflow:hidden + chiều cao đã bị JS thu nhỏ của .preview-stage,
@@ -1071,53 +1113,61 @@
         const oldStageOverflow = stage ? stage.style.overflow : '';
         const oldStageHeight = stage ? stage.style.height : '';
 
-        document.fonts.ready.then(() => {
-            area.style.transform = "none";
-            if (scaler) scaler.style.transform = "none";
-            if (stage) { stage.style.overflow = "visible"; stage.style.height = "auto"; }
+        await document.fonts.ready;
 
-            html2canvas(area, { 
-                scale: 1, 
-                useCORS: true, 
-                allowTaint: true,
-                backgroundColor: null,
-                width: area.offsetWidth,
-                height: area.offsetHeight
-            }).then(canvas => {
-                area.style.transform = oldAreaT;
-                if (scaler) scaler.style.transform = oldScalerT;
-                if (stage) { stage.style.overflow = oldStageOverflow; stage.style.height = oldStageHeight; }
-                updatePreviewScale();
+        area.style.transform = "none";
+        if (scaler) scaler.style.transform = "none";
+        if (stage) { stage.style.overflow = "visible"; stage.style.height = "auto"; }
 
-                canvas.toBlob(async (blob) => {
-                    if (!blob) return;
+        const canvas = await html2canvas(area, {
+            scale: 1,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: null,
+            width: area.offsetWidth,
+            height: area.offsetHeight
+        });
 
-                    // iPhone / iPad: dùng Web Share API để lưu thẳng vào Thư viện ảnh
-                    if (isIOSDevice() && navigator.canShare) {
-                        const file = new File([blob], fileName, { type: 'image/png' });
-                        if (navigator.canShare({ files: [file] })) {
-                            try {
-                                await navigator.share({ files: [file] });
-                                return;
-                            } catch (err) {
-                                // Người dùng bấm Hủy hoặc trình duyệt chặn -> rơi xuống tải file như bình thường
-                                if (err && err.name === 'AbortError') return;
-                            }
-                        }
-                    }
+        area.style.transform = oldAreaT;
+        if (scaler) scaler.style.transform = oldScalerT;
+        if (stage) { stage.style.overflow = oldStageOverflow; stage.style.height = oldStageHeight; }
+        updatePreviewScale();
 
-                    // Android / Windows / các trường hợp còn lại: tải file như cũ
-                    const link = document.createElement('a');
-                    link.download = fileName;
-                    link.href = URL.createObjectURL(blob);
-                    link.click();
-                    URL.revokeObjectURL(link.href);
-                }, 'image/png');
-            });
+        return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    }
+
+    // Chụp lần lượt nhiều vùng phiếu (an toàn, không chạy song song để tránh xung đột transform
+    // dùng chung của .preview-scaler/.preview-stage), rồi lưu ảnh:
+    // - Trên iPhone/iPad: gộp lại thành 1 lần chia sẻ duy nhất - bấm "Lưu" là lưu hết các ảnh vào Thư viện ảnh.
+    // - Nơi khác: tự tải về từng file một như bình thường.
+    async function captureAndSaveMultiple(items) {
+        const files = [];
+        for (const item of items) {
+            const blob = await captureArea(item.area);
+            if (blob) files.push(new File([blob], item.fileName, { type: 'image/png' }));
+        }
+        if (files.length === 0) return;
+
+        if (isIOSDevice() && navigator.canShare && navigator.canShare({ files })) {
+            try {
+                await navigator.share({ files });
+                return;
+            } catch (err) {
+                // Người dùng bấm Hủy hoặc trình duyệt chặn -> rơi xuống tải file như bình thường
+                if (err && err.name === 'AbortError') return;
+            }
+        }
+
+        files.forEach(file => {
+            const link = document.createElement('a');
+            link.download = file.name;
+            link.href = URL.createObjectURL(file);
+            link.click();
+            URL.revokeObjectURL(link.href);
         });
     }
 
-    function exportImg() {
+    async function exportImg() {
         if (activeTicket === 'hocphi') {
             const ten = document.getElementById('in-ten').value, mon = document.getElementById('in-mon').value,
                   phi = document.getElementById('in-phi').value, start = document.getElementById('in-start').value;
@@ -1126,7 +1176,13 @@
                 alert("Vui lòng điền đủ thông tin bắt buộc!");
                 return;
             }
-            captureAndSave(document.getElementById('capture-area'), `${mon}_${ten}.png`);
+            const items = [
+                { area: document.getElementById('capture-area'), fileName: `${mon}_${ten}.png` }
+            ];
+            if (isNewStudent) {
+                items.push({ area: document.getElementById('capture-area-schedule'), fileName: `${mon}_${ten}_LichHoc.png` });
+            }
+            await captureAndSaveMultiple(items);
         } else {
             const ten = document.getElementById('nx-ten').value, mon = document.getElementById('nx-mon').value;
 
@@ -1135,7 +1191,9 @@
                 return;
             }
             const prefix = nxTrialMode ? 'HocThu' : 'NhanXet';
-            captureAndSave(document.getElementById('capture-area-nx'), `${prefix}_${mon}_${ten}.png`);
+            await captureAndSaveMultiple([
+                { area: document.getElementById('capture-area-nx'), fileName: `${prefix}_${mon}_${ten}.png` }
+            ]);
         }
     }
 </script>
