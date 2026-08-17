@@ -155,11 +155,11 @@
         .footer { background: var(--paper); padding: 24px 0; width: 100%; box-sizing: border-box; text-align: center; font-style: italic; font-weight: 500; font-size: 18px; line-height: normal; color: var(--text-color); }
 
         /* PHIẾU LỊCH HỌC NHỎ - xuất kèm phiếu học phí thành file riêng */
-        #capture-area-schedule { width: 829px; height: 286px; background: var(--paper); box-sizing: border-box; padding: 64px 48px; display: flex; align-items: center; gap: 31px; font-family: 'Montserrat', sans-serif; color: var(--text-color); }
+        #capture-area-schedule { width: 840px; height: 286px; background: var(--paper); box-sizing: border-box; padding: 64px; display: flex; align-items: center; gap: 27px; font-family: 'Montserrat', sans-serif; color: var(--text-color); }
         .sc-logo { width: 120px; height: 120px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
         .sc-divider { width: 1px; align-self: stretch; background: rgba(93,31,31,0.35); flex-shrink: 0; }
-        .sc-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
-        .sc-row { display: flex; align-items: flex-start; gap: 12px; font-size: 32px; }
+        .sc-info { display: flex; flex-direction: column; gap: 11px; flex: 1; min-width: 0; }
+        .sc-row { display: flex; align-items: flex-start; gap: 12px; font-size: 28px; }
         .sc-label-wrap { display: flex; align-items: center; justify-content: space-between; width: 198px; flex-shrink: 0; font-weight: 500; }
         .sc-value { font-weight: 500; flex: 1; line-height: 1.2; min-width: 0; }
 
@@ -193,7 +193,7 @@
         .preview-label { display: flex; align-items: center; gap: 8px; font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; color: var(--maroon); }
         .preview-stage { width: 100%; overflow: hidden; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border); background: var(--cream); }
         .preview-scaler { width: 1280px; transform-origin: top left; }
-        #preview-scaler-schedule { width: 829px; }
+        #preview-scaler-schedule { width: 840px; }
 
         textarea { font-family: 'Montserrat', sans-serif; width: 100%; padding: 11px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm) var(--radius-sm) 0 0; box-sizing: border-box; font-size: 14px; color: var(--ink); background: #fff; resize: none; min-height: 76px; line-height: 1.5; transition: border-color .15s, box-shadow .15s; display: block; }
         textarea:focus { outline: none; border-color: var(--maroon); box-shadow: 0 0 0 3px rgba(93,31,31,0.10); }
@@ -675,7 +675,7 @@
 
     function updatePreviewScale() {
         scaleOneStage(document.getElementById('preview-stage-main'), document.getElementById('preview-scaler-main'), 1280);
-        scaleOneStage(document.getElementById('preview-stage-schedule'), document.getElementById('preview-scaler-schedule'), 829);
+        scaleOneStage(document.getElementById('preview-stage-schedule'), document.getElementById('preview-scaler-schedule'), 840);
     }
     window.addEventListener('resize', updatePreviewScale);
     window.addEventListener('orientationchange', updatePreviewScale);
