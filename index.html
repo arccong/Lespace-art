@@ -155,12 +155,12 @@
         .footer { background: var(--paper); padding: 24px 0; width: 100%; box-sizing: border-box; text-align: center; font-style: italic; font-weight: 500; font-size: 18px; line-height: normal; color: var(--text-color); }
 
         /* PHIẾU LỊCH HỌC NHỎ - xuất kèm phiếu học phí thành file riêng */
-        #capture-area-schedule { width: 640px; margin: 40px auto 0; background: var(--paper); border-radius: 24px; padding: 24px 28px; box-sizing: border-box; display: flex; align-items: center; gap: 22px; font-family: 'Montserrat', sans-serif; color: var(--text-color); box-shadow: var(--shadow-md); border: 1px solid var(--border); }
-        .sc-logo { width: 76px; height: 76px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
-        .sc-divider { width: 1px; align-self: stretch; background: rgba(93,31,31,0.25); flex-shrink: 0; }
-        .sc-info { display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 0; }
-        .sc-row { display: flex; align-items: flex-start; gap: 10px; font-size: 19px; }
-        .sc-label { flex: 0 0 96px; font-weight: 500; }
+        #capture-area-schedule { width: 1280px; height: 286px; background: var(--paper); box-sizing: border-box; padding: 0 70px; display: flex; align-items: center; gap: 40px; font-family: 'Montserrat', sans-serif; color: var(--text-color); }
+        .sc-logo { width: 170px; height: 170px; border-radius: 50%; flex-shrink: 0; object-fit: cover; }
+        .sc-divider { width: 1.5px; align-self: stretch; margin: 40px 0; background: rgba(93,31,31,0.35); flex-shrink: 0; }
+        .sc-info { display: flex; flex-direction: column; gap: 16px; flex: 1; min-width: 0; }
+        .sc-row { display: flex; align-items: flex-start; gap: 16px; font-size: 28px; }
+        .sc-label { flex: 0 0 155px; font-weight: 500; }
         .sc-colon { flex-shrink: 0; }
         .sc-value { font-weight: 500; flex: 1; line-height: 1.5; min-width: 0; }
 
@@ -481,8 +481,8 @@
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
         <span id="preview-label-text">Xem trước phiếu</span>
     </div>
-    <div class="preview-stage">
-    <div class="preview-scaler">
+    <div class="preview-stage" id="preview-stage-main">
+    <div class="preview-scaler" id="preview-scaler-main">
 <div id="capture-area">
     <div class="header">
         <div class="header-inner">
@@ -558,25 +558,6 @@
     </div>
     </div>
 
-<div id="capture-area-schedule" style="display:none;">
-    <img src="icon-512.png" class="sc-logo">
-    <div class="sc-divider"></div>
-    <div class="sc-info">
-        <div class="sc-row">
-            <span class="sc-label">Học sinh</span><span class="sc-colon">:</span>
-            <span class="sc-value" id="sched-out-ten">---</span>
-        </div>
-        <div class="sc-row">
-            <span class="sc-label">Lớp</span><span class="sc-colon">:</span>
-            <span class="sc-value" id="sched-out-mon">---</span>
-        </div>
-        <div class="sc-row">
-            <span class="sc-label">Lịch học</span><span class="sc-colon">:</span>
-            <span class="sc-value" id="sched-out-schedule">---</span>
-        </div>
-    </div>
-</div>
-
 <div id="capture-area-nx" style="display:none;">
     <div class="header">
         <div class="header-inner">
@@ -628,6 +609,34 @@
 
 </div>
 </div>
+
+<div class="preview-label" id="preview-label-schedule" style="display:none;">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>
+    <span>Xem trước phiếu lịch học</span>
+</div>
+<div class="preview-stage" id="preview-stage-schedule" style="display:none;">
+<div class="preview-scaler" id="preview-scaler-schedule">
+<div id="capture-area-schedule">
+    <img src="icon-512.png" class="sc-logo">
+    <div class="sc-divider"></div>
+    <div class="sc-info">
+        <div class="sc-row">
+            <span class="sc-label">Học sinh</span><span class="sc-colon">:</span>
+            <span class="sc-value" id="sched-out-ten">---</span>
+        </div>
+        <div class="sc-row">
+            <span class="sc-label">Lớp</span><span class="sc-colon">:</span>
+            <span class="sc-value" id="sched-out-mon">---</span>
+        </div>
+        <div class="sc-row">
+            <span class="sc-label">Lịch học</span><span class="sc-colon">:</span>
+            <span class="sc-value" id="sched-out-schedule">---</span>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -647,16 +656,20 @@
     // Co giãn khung xem trước vừa khít mọi kích thước màn hình.
     // Đo chiều cao THẬT của phiếu đang hiển thị (scaler.offsetHeight) thay vì số cố định,
     // vì phiếu Nhận xét có chiều cao co giãn theo lượng nội dung giáo viên nhập.
-    // Scale được đặt trên .preview-scaler (KHÔNG phải #capture-area / #capture-area-nx),
+    // Scale được đặt trên .preview-scaler (KHÔNG phải #capture-area / #capture-area-nx / #capture-area-schedule),
     // nên không ảnh hưởng tới exportImg() - ảnh xuất ra luôn giữ đúng độ phân giải gốc.
-    function updatePreviewScale() {
-        const stage = document.querySelector('.preview-stage');
-        const scaler = document.querySelector('.preview-scaler');
+    // Có 2 khung preview độc lập (phiếu chính + phiếu lịch học), mỗi khung tự co giãn riêng.
+    function scaleOneStage(stage, scaler) {
         if (!stage || !scaler) return;
         const naturalHeight = scaler.offsetHeight;
         const scale = Math.min(1, stage.clientWidth / 1280);
         scaler.style.transform = `scale(${scale})`;
         stage.style.height = (naturalHeight * scale) + 'px';
+    }
+
+    function updatePreviewScale() {
+        scaleOneStage(document.getElementById('preview-stage-main'), document.getElementById('preview-scaler-main'));
+        scaleOneStage(document.getElementById('preview-stage-schedule'), document.getElementById('preview-scaler-schedule'));
     }
     window.addEventListener('resize', updatePreviewScale);
     window.addEventListener('orientationchange', updatePreviewScale);
@@ -963,7 +976,8 @@
     // Phiếu lịch học nhỏ chỉ áp dụng cho học sinh mới, và chỉ khi đang ở tab Phiếu học phí
     function updateScheduleCardVisibility() {
         const show = activeTicket === 'hocphi' && isNewStudent;
-        document.getElementById('capture-area-schedule').style.display = show ? 'flex' : 'none';
+        document.getElementById('preview-label-schedule').style.display = show ? 'flex' : 'none';
+        document.getElementById('preview-stage-schedule').style.display = show ? 'block' : 'none';
         updatePreviewScale();
     }
 
@@ -1106,8 +1120,8 @@
         // Trên iOS còn phải bỏ luôn overflow:hidden + chiều cao đã bị JS thu nhỏ của .preview-stage,
         // nếu không phần nội dung nằm ngoài vùng hiển thị (đã bị cắt cho vừa màn hình mobile) sẽ
         // render ra thành mảng đen ở cuối ảnh xuất (Safari không render tốt phần bị ancestor cắt).
-        const scaler = document.querySelector('.preview-scaler');
-        const stage = document.querySelector('.preview-stage');
+        const stage = area.closest('.preview-stage');
+        const scaler = stage ? stage.querySelector('.preview-scaler') : null;
         const oldAreaT = area.style.transform;
         const oldScalerT = scaler ? scaler.style.transform : '';
         const oldStageOverflow = stage ? stage.style.overflow : '';
@@ -1148,23 +1162,46 @@
         }
         if (files.length === 0) return;
 
-        if (isIOSDevice() && navigator.canShare && navigator.canShare({ files })) {
-            try {
-                await navigator.share({ files });
-                return;
-            } catch (err) {
-                // Người dùng bấm Hủy hoặc trình duyệt chặn -> rơi xuống tải file như bình thường
-                if (err && err.name === 'AbortError') return;
+        if (isIOSDevice() && navigator.canShare) {
+            // Thử gộp chung 1 lần chia sẻ trước (tiện nhất, nếu máy hỗ trợ)
+            if (files.length > 1 && navigator.canShare({ files })) {
+                try {
+                    await navigator.share({ files });
+                    return;
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return;
+                }
             }
+
+            // Máy không hỗ trợ chia sẻ gộp nhiều ảnh cùng lúc -> chia sẻ lần lượt từng ảnh
+            // (vẫn hiện bảng chia sẻ cho từng ảnh, thay vì rơi thẳng xuống tải file - trên mobile
+            // các lượt tải file tự động từ ảnh thứ 2 trở đi thường bị trình duyệt âm thầm chặn).
+            let allShared = true;
+            for (const file of files) {
+                if (navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({ files: [file] });
+                    } catch (err) {
+                        if (err && err.name === 'AbortError') return; // người dùng hủy -> dừng hẳn
+                        allShared = false;
+                    }
+                } else {
+                    allShared = false;
+                }
+            }
+            if (allShared) return;
         }
 
-        files.forEach(file => {
+        // Android / Windows / các trường hợp còn lại: tải lần lượt từng file, có giãn cách nhỏ
+        // giữa các lượt tải để trình duyệt không chặn các lượt tải sau khi tải nhiều file liên tiếp.
+        for (const file of files) {
             const link = document.createElement('a');
             link.download = file.name;
             link.href = URL.createObjectURL(file);
             link.click();
+            await new Promise(resolve => setTimeout(resolve, 300));
             URL.revokeObjectURL(link.href);
-        });
+        }
     }
 
     async function exportImg() {
