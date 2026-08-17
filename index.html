@@ -211,6 +211,12 @@
         .btn-ghost { background: transparent; color: var(--muted); font-weight: 600; padding: 6px 4px; text-decoration: underline; text-underline-offset: 3px; }
         .btn-ghost:hover { color: var(--ink); }
 
+        /* Banner nhắc tải thêm file thứ 2 (VD: phiếu lịch học) - nút TẢI thật để bấm tay */
+        .secondary-download-banner { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 90; background: var(--card); border: 1px solid var(--border); box-shadow: var(--shadow-lg); border-radius: 14px; padding: 12px 12px 12px 16px; display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px); font-size: 13px; color: var(--ink); font-family: 'Montserrat', sans-serif; }
+        .secondary-download-banner .dl-btn { background: var(--maroon); color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: 'Montserrat', sans-serif; }
+        .secondary-download-banner .dl-btn:hover { background: var(--maroon-dark); }
+        .secondary-download-close { background: transparent; border: none; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 2px 4px; flex-shrink: 0; }
+
         .action-bar { position: sticky; bottom: 0; margin: 14px -22px -22px; padding: 14px 22px 20px; background: linear-gradient(to top, var(--card) 65%, rgba(255,255,255,0)); display: flex; flex-direction: column; gap: 10px; }
         .action-row { display: flex; gap: 10px; }
         .action-row .btn { flex: 1; }
@@ -1149,61 +1155,70 @@
         return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     }
 
-    // Chụp lần lượt nhiều vùng phiếu (an toàn, không chạy song song để tránh xung đột transform
-    // dùng chung của .preview-scaler/.preview-stage), rồi lưu ảnh:
-    // - Trên iPhone/iPad: gộp lại thành 1 lần chia sẻ duy nhất - bấm "Lưu" là lưu hết các ảnh vào Thư viện ảnh.
-    // - Nơi khác: tự tải về từng file một như bình thường.
-    async function captureAndSaveMultiple(items) {
-        const files = [];
-        for (const item of items) {
-            const blob = await captureArea(item.area);
-            if (blob) files.push(new File([blob], item.fileName, { type: 'image/png' }));
-        }
-        if (files.length === 0) return;
-
-        if (isIOSDevice() && navigator.canShare) {
-            // Thử gộp chung 1 lần chia sẻ trước (tiện nhất, nếu máy hỗ trợ)
-            if (files.length > 1 && navigator.canShare({ files })) {
-                try {
-                    await navigator.share({ files });
-                    return;
-                } catch (err) {
-                    if (err && err.name === 'AbortError') return;
-                }
+    // Lưu/chia sẻ 1 file ảnh duy nhất
+    async function saveOrShareSingle(file) {
+        if (isIOSDevice() && navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({ files: [file] });
+                return;
+            } catch (err) {
+                if (err && err.name === 'AbortError') return;
             }
+        }
+        const link = document.createElement('a');
+        link.download = file.name;
+        link.href = URL.createObjectURL(file);
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
 
-            // Máy không hỗ trợ chia sẻ gộp nhiều ảnh cùng lúc -> chia sẻ lần lượt từng ảnh
-            // (vẫn hiện bảng chia sẻ cho từng ảnh, thay vì rơi thẳng xuống tải file - trên mobile
-            // các lượt tải file tự động từ ảnh thứ 2 trở đi thường bị trình duyệt âm thầm chặn).
-            let allShared = true;
-            for (const file of files) {
-                if (navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({ files: [file] });
-                    } catch (err) {
-                        if (err && err.name === 'AbortError') return; // người dùng hủy -> dừng hẳn
-                        allShared = false;
-                    }
-                } else {
-                    allShared = false;
-                }
+    // Hiện banner có nút bấm TAY để tải thêm file thứ 2 (VD: phiếu lịch học).
+    // Lý do: gọi navigator.share()/tải file tự động lần 2 (không do người dùng bấm trực tiếp)
+    // thường bị trình duyệt mobile âm thầm chặn hoặc từ chối vì đã "dùng hết" lượt thao tác
+    // của cú bấm gốc. Để một nút thật cho người dùng tự bấm thì luôn tải/chia sẻ được, mọi máy.
+    function removeSecondaryDownloadPrompt() {
+        const old = document.getElementById('secondary-download-banner');
+        if (old) old.remove();
+    }
+
+    function showSecondaryDownloadPrompt(file, label) {
+        removeSecondaryDownloadPrompt();
+        const url = URL.createObjectURL(file);
+
+        const banner = document.createElement('div');
+        banner.id = 'secondary-download-banner';
+        banner.className = 'secondary-download-banner';
+        banner.innerHTML = `
+            <span>Đã xuất xong! Bấm để tải thêm <strong>${label}</strong>:</span>
+            <button type="button" class="dl-btn">Tải xuống</button>
+            <button type="button" class="secondary-download-close" aria-label="Đóng">&times;</button>
+        `;
+
+        banner.querySelector('.dl-btn').addEventListener('click', async () => {
+            // Đây là cú bấm thật của người dùng -> luôn share/tải được, kể cả trên iOS
+            if (isIOSDevice() && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try { await navigator.share({ files: [file] }); } catch (err) {}
+            } else {
+                const link = document.createElement('a');
+                link.download = file.name;
+                link.href = url;
+                link.click();
             }
-            if (allShared) return;
-        }
+            URL.revokeObjectURL(url);
+            removeSecondaryDownloadPrompt();
+        });
 
-        // Android / Windows / các trường hợp còn lại: tải lần lượt từng file, có giãn cách nhỏ
-        // giữa các lượt tải để trình duyệt không chặn các lượt tải sau khi tải nhiều file liên tiếp.
-        for (const file of files) {
-            const link = document.createElement('a');
-            link.download = file.name;
-            link.href = URL.createObjectURL(file);
-            link.click();
-            await new Promise(resolve => setTimeout(resolve, 300));
-            URL.revokeObjectURL(link.href);
-        }
+        banner.querySelector('.secondary-download-close').addEventListener('click', () => {
+            URL.revokeObjectURL(url);
+            removeSecondaryDownloadPrompt();
+        });
+
+        document.body.appendChild(banner);
     }
 
     async function exportImg() {
+        removeSecondaryDownloadPrompt();
+
         if (activeTicket === 'hocphi') {
             const ten = document.getElementById('in-ten').value, mon = document.getElementById('in-mon').value,
                   phi = document.getElementById('in-phi').value, start = document.getElementById('in-start').value;
@@ -1212,13 +1227,19 @@
                 alert("Vui lòng điền đủ thông tin bắt buộc!");
                 return;
             }
-            const items = [
-                { area: document.getElementById('capture-area'), fileName: `${mon}_${ten}.png` }
-            ];
-            if (isNewStudent) {
-                items.push({ area: document.getElementById('capture-area-schedule'), fileName: `${mon}_${ten}_LichHoc.png` });
+
+            const mainBlob = await captureArea(document.getElementById('capture-area'));
+            if (mainBlob) {
+                await saveOrShareSingle(new File([mainBlob], `${mon}_${ten}.png`, { type: 'image/png' }));
             }
-            await captureAndSaveMultiple(items);
+
+            if (isNewStudent) {
+                const schedBlob = await captureArea(document.getElementById('capture-area-schedule'));
+                if (schedBlob) {
+                    const schedFile = new File([schedBlob], `${mon}_${ten}_LichHoc.png`, { type: 'image/png' });
+                    showSecondaryDownloadPrompt(schedFile, 'phiếu lịch học');
+                }
+            }
         } else {
             const ten = document.getElementById('nx-ten').value, mon = document.getElementById('nx-mon').value;
 
@@ -1227,9 +1248,10 @@
                 return;
             }
             const prefix = nxTrialMode ? 'HocThu' : 'NhanXet';
-            await captureAndSaveMultiple([
-                { area: document.getElementById('capture-area-nx'), fileName: `${prefix}_${mon}_${ten}.png` }
-            ]);
+            const blob = await captureArea(document.getElementById('capture-area-nx'));
+            if (blob) {
+                await saveOrShareSingle(new File([blob], `${prefix}_${mon}_${ten}.png`, { type: 'image/png' }));
+            }
         }
     }
 </script>
